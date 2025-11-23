@@ -1,0 +1,467 @@
+{
+  "id": "sara",
+  "name": "Sara",
+  "aka": [
+    "Baby Father"
+  ],
+  "year": 1987,
+  "producer": "King Jammy",
+  "stats": {
+    "name": "Sara",
+    "min_year": 1987,
+    "max_year": 2003,
+    "count_tracks": 39,
+    "count_original": 1
+  },
+  "tracks": [
+    {
+      "row_index": 0,
+      "artist": "Frankie Paul",
+      "title": "Sara",
+      "year": 1987,
+      "riddim": "Sara",
+      "producer": "King Jammy",
+      "label": "Live & Love",
+      "is_original": true,
+      "is_dub": false
+    },
+    {
+      "row_index": 1,
+      "artist": "Admiral Bailey",
+      "title": "My Heart Is Burning",
+      "year": 1987,
+      "riddim": "Sara",
+      "producer": "King Jammy",
+      "label": "Jammy's",
+      "is_original": false,
+      "is_dub": false
+    },
+    {
+      "row_index": 2,
+      "artist": "Gregory Isaacs",
+      "title": "Bits And Pieces",
+      "year": 1987,
+      "riddim": "Sara",
+      "producer": "King Jammy",
+      "label": "Jammy's",
+      "is_original": false,
+      "is_dub": false
+    },
+    {
+      "row_index": 3,
+      "artist": "Jennifer Lara",
+      "title": "Frankie",
+      "year": 1987,
+      "riddim": "Sara",
+      "producer": "King Jammy",
+      "label": "Jammy's",
+      "is_original": false,
+      "is_dub": false
+    },
+    {
+      "row_index": 4,
+      "artist": "Pinchers",
+      "title": "Loving That You Want",
+      "year": 1987,
+      "riddim": "Sara",
+      "producer": "King Jammy",
+      "label": "Live & Love",
+      "is_original": false,
+      "is_dub": false
+    },
+    {
+      "row_index": 5,
+      "artist": "Sanchez",
+      "title": "End Of The Road",
+      "year": 1988,
+      "riddim": "Sara",
+      "producer": "King Jammy",
+      "label": "Jammy's",
+      "is_original": false,
+      "is_dub": false
+    },
+    {
+      "row_index": 6,
+      "artist": "Anthony Cruz",
+      "title": "Can't Live Without You",
+      "year": 2003,
+      "riddim": "Sara",
+      "producer": "Marcello Small",
+      "label": "Baby Father",
+      "is_original": false,
+      "is_dub": false
+    },
+    {
+      "row_index": 7,
+      "artist": "Anthony Cruz",
+      "title": "Happy Birthday",
+      "year": 2003,
+      "riddim": "Sara",
+      "producer": "King Jammy",
+      "label": "Jammy's",
+      "is_original": false,
+      "is_dub": false
+    },
+    {
+      "row_index": 8,
+      "artist": "Bobby Crystal",
+      "title": "Just Like Us",
+      "year": 2003,
+      "riddim": "Sara",
+      "producer": "King Jammy",
+      "label": "Jammy's",
+      "is_original": false,
+      "is_dub": false
+    },
+    {
+      "row_index": 9,
+      "artist": "Bugsy Malone",
+      "title": "Informer",
+      "year": 2003,
+      "riddim": "Sara",
+      "producer": "King Jammy",
+      "label": "Jammy's",
+      "is_original": false,
+      "is_dub": false
+    },
+    {
+      "row_index": 10,
+      "artist": "Bushman",
+      "title": "True Love",
+      "year": 2003,
+      "riddim": "Sara",
+      "producer": "King Jammy",
+      "label": "Jammy's",
+      "is_original": false,
+      "is_dub": false
+    },
+    {
+      "row_index": 11,
+      "artist": "Ce'Cile",
+      "title": "Want You Badly",
+      "year": 2003,
+      "riddim": "Sara",
+      "producer": "Marcello Small",
+      "label": "Baby Father",
+      "is_original": false,
+      "is_dub": false
+    },
+    {
+      "row_index": 12,
+      "artist": "Christopher",
+      "title": "Gots To Be",
+      "year": 2003,
+      "riddim": "Sara",
+      "producer": "Marcello Small",
+      "label": "Baby Father",
+      "is_original": false,
+      "is_dub": false
+    },
+    {
+      "row_index": 13,
+      "artist": "Coby J",
+      "title": "Sunshine And Rain",
+      "year": 2003,
+      "riddim": "Sara",
+      "producer": "King Jammy",
+      "label": "Jammy's",
+      "is_original": false,
+      "is_dub": false
+    },
+    {
+      "row_index": 14,
+      "artist": "Da'Ville",
+      "title": "What I Want",
+      "year": 2003,
+      "riddim": "Sara",
+      "producer": "King Jammy",
+      "label": "Jammy's",
+      "is_original": false,
+      "is_dub": false
+    },
+    {
+      "row_index": 15,
+      "artist": "Determine",
+      "title": "Too Confused",
+      "year": 2003,
+      "riddim": "Sara",
+      "producer": "King Jammy",
+      "label": "Jammy's",
+      "is_original": false,
+      "is_dub": false
+    },
+    {
+      "row_index": 16,
+      "artist": "Frankie Paul",
+      "title": "My Sunshine",
+      "year": 2003,
+      "riddim": "Sara",
+      "producer": "Marcello Small",
+      "label": "Baby Father",
+      "is_original": false,
+      "is_dub": false
+    },
+    {
+      "row_index": 17,
+      "artist": "George Nooks",
+      "title": "Anytime",
+      "year": 2003,
+      "riddim": "Sara",
+      "producer": "Marcello Small",
+      "label": "Baby Father",
+      "is_original": false,
+      "is_dub": false
+    },
+    {
+      "row_index": 18,
+      "artist": "Jahmali",
+      "title": "Eena Barrell",
+      "year": 2003,
+      "riddim": "Sara",
+      "producer": "King Jammy",
+      "label": "Jammy's",
+      "is_original": false,
+      "is_dub": false
+    },
+    {
+      "row_index": 19,
+      "artist": "L.M.S.",
+      "title": "I Am Yours",
+      "year": 2003,
+      "riddim": "Sara",
+      "producer": "King Jammy",
+      "label": "Jammy's",
+      "is_original": false,
+      "is_dub": false
+    },
+    {
+      "row_index": 20,
+      "artist": "Lukie D",
+      "title": "Forever In Love",
+      "year": 2003,
+      "riddim": "Sara",
+      "producer": "Marcello Small",
+      "label": "Baby Father",
+      "is_original": false,
+      "is_dub": false
+    },
+    {
+      "row_index": 21,
+      "artist": "Mad Cobra",
+      "title": "To Be Poor",
+      "year": 2003,
+      "riddim": "Sara",
+      "producer": "King Jammy",
+      "label": "Jammy's",
+      "is_original": false,
+      "is_dub": false
+    },
+    {
+      "row_index": 22,
+      "artist": "Mahlon",
+      "title": "Someone Who Cares",
+      "year": 2003,
+      "riddim": "Sara",
+      "producer": "Marcello Small",
+      "label": "Baby Father",
+      "is_original": false,
+      "is_dub": false
+    },
+    {
+      "row_index": 23,
+      "artist": "Mr. Easy",
+      "title": "Gangster Girl",
+      "year": 2003,
+      "riddim": "Sara",
+      "producer": "Marcello Small",
+      "label": "Baby Father",
+      "is_original": false,
+      "is_dub": false
+    },
+    {
+      "row_index": 24,
+      "artist": "Mykal Rose",
+      "title": "Free Education",
+      "year": 2003,
+      "riddim": "Sara",
+      "producer": "King Jammy",
+      "label": "Jammy's",
+      "is_original": false,
+      "is_dub": false
+    },
+    {
+      "row_index": 25,
+      "artist": "Natural Black & Swade",
+      "title": "Sun Still Shine",
+      "year": 2003,
+      "riddim": "Sara",
+      "producer": "King Jammy",
+      "label": "Jammy's",
+      "is_original": false,
+      "is_dub": false
+    },
+    {
+      "row_index": 26,
+      "artist": "Robin",
+      "title": "So Long",
+      "year": 2003,
+      "riddim": "Sara",
+      "producer": "King Jammy",
+      "label": "Jammy's",
+      "is_original": false,
+      "is_dub": false
+    },
+    {
+      "row_index": 27,
+      "artist": "Roundhead",
+      "title": "Keep On",
+      "year": 2003,
+      "riddim": "Sara",
+      "producer": "King Jammy",
+      "label": "Jammy's",
+      "is_original": false,
+      "is_dub": false
+    },
+    {
+      "row_index": 28,
+      "artist": "Singer J",
+      "title": "It's Over",
+      "year": 2003,
+      "riddim": "Sara",
+      "producer": "King Jammy",
+      "label": "Jammy's",
+      "is_original": false,
+      "is_dub": false
+    },
+    {
+      "row_index": 29,
+      "artist": "Singing Melody",
+      "title": "Baby Father",
+      "year": 2003,
+      "riddim": "Sara",
+      "producer": "Marcello Small",
+      "label": "Baby Father",
+      "is_original": false,
+      "is_dub": false
+    },
+    {
+      "row_index": 30,
+      "artist": "Sizzla",
+      "title": "Don't Have Jah",
+      "year": 2003,
+      "riddim": "Sara",
+      "producer": "Marcello Small",
+      "label": "Baby Father",
+      "is_original": false,
+      "is_dub": false
+    },
+    {
+      "row_index": 31,
+      "artist": "Sizzla",
+      "title": "Love Is The Way",
+      "year": 2003,
+      "riddim": "Sara",
+      "producer": "King Jammy",
+      "label": "Jammy's",
+      "is_original": false,
+      "is_dub": false
+    },
+    {
+      "row_index": 32,
+      "artist": "Stevie Face",
+      "title": "The Way Of Life",
+      "year": 2003,
+      "riddim": "Sara",
+      "producer": "Marcello Small",
+      "label": "Baby Father",
+      "is_original": false,
+      "is_dub": false
+    },
+    {
+      "row_index": 33,
+      "artist": "Tanya Stephens",
+      "title": "Chatterlist",
+      "year": 2003,
+      "riddim": "Sara",
+      "producer": "Marcello Small",
+      "label": "Baby Father",
+      "is_original": false,
+      "is_dub": false
+    },
+    {
+      "row_index": 34,
+      "artist": "Tony Curtis",
+      "title": "So In Love",
+      "year": 2003,
+      "riddim": "Sara",
+      "producer": "Marcello Small",
+      "label": "Baby Father",
+      "is_original": false,
+      "is_dub": false
+    },
+    {
+      "row_index": 35,
+      "artist": "Upsurge",
+      "title": "Gonna Be Sorry",
+      "year": 2003,
+      "riddim": "Sara",
+      "producer": "King Jammy",
+      "label": "Jammy's",
+      "is_original": false,
+      "is_dub": false
+    },
+    {
+      "row_index": 36,
+      "artist": "Voice Mail",
+      "title": "Baby",
+      "year": 2003,
+      "riddim": "Sara",
+      "producer": "Marcello Small",
+      "label": "Baby Father",
+      "is_original": false,
+      "is_dub": false
+    },
+    {
+      "row_index": 37,
+      "artist": "Vybz Kartel",
+      "title": "A Man Is Just A Man",
+      "year": 2003,
+      "riddim": "Sara",
+      "producer": "King Jammy",
+      "label": "Jammy's",
+      "is_original": false,
+      "is_dub": false
+    },
+    {
+      "row_index": 38,
+      "artist": "Warrior King",
+      "title": "Rock To The Riddim",
+      "year": 2003,
+      "riddim": "Sara",
+      "producer": "Marcello Small",
+      "label": "Baby Father",
+      "is_original": false,
+      "is_dub": false
+    }
+  ],
+  "pickup": [
+{ "row_index": 0, "tier": "S", "role": "original" },
+
+{ "row_index": 1,  "tier": "A", "role": "classic" },
+{ "row_index": 2,  "tier": "A", "role": "classic" },
+{ "row_index": 5,  "tier": "S", "role": "classic" },
+
+{ "row_index": 7,  "tier": "A", "role": "modern" },
+{ "row_index": 10, "tier": "A", "role": "modern" },
+{ "row_index": 11, "tier": "B", "role": "modern" },
+{ "row_index": 14, "tier": "A", "role": "modern" },
+{ "row_index": 17, "tier": "B", "role": "modern" },
+{ "row_index": 29, "tier": "A", "role": "modern" },
+{ "row_index": 30, "tier": "S", "role": "modern" },
+{ "row_index": 33, "tier": "A", "role": "modern" },
+{ "row_index": 37, "tier": "S", "role": "modern" },
+{ "row_index": 38, "tier": "B", "role": "modern" }
+
+
+]
+}

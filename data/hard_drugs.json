@@ -1,0 +1,420 @@
+{
+  "id": "hard_drugs",
+  "name": "Hard Drugs",
+  "aka": [],
+  "year": 1988,
+  "producer": "Sly",
+  "stats": {
+    "name": "Hard Drugs",
+    "min_year": 1988,
+    "max_year": 2005,
+    "count_tracks": 35,
+    "count_original": 1
+  },
+  "tracks": [
+    {
+      "row_index": 0,
+      "artist": "Gregory Isaacs",
+      "title": "Hard Drugs",
+      "year": 1988,
+      "riddim": "Hard Drugs",
+      "producer": "Tappa Zukie",
+      "label": "Tappa",
+      "is_original": true,
+      "is_dub": false
+    },
+    {
+      "row_index": 1,
+      "artist": "Sly & Robbie",
+      "title": "Hard Drugs Version",
+      "year": 1988,
+      "riddim": "Hard Drugs",
+      "producer": "Tappa Zukie",
+      "label": "Tappa",
+      "is_original": false,
+      "is_dub": false
+    },
+    {
+      "row_index": 2,
+      "artist": "Anthony B & Little Devon & Prestige",
+      "title": "Hot Stuff",
+      "year": 2005,
+      "riddim": "Hard Drugs",
+      "producer": "Frederick Ricketts",
+      "label": "Delperies",
+      "is_original": false,
+      "is_dub": false
+    },
+    {
+      "row_index": 3,
+      "artist": "Bascom X",
+      "title": "Bascom Love",
+      "year": 2005,
+      "riddim": "Hard Drugs",
+      "producer": "Frederick Ricketts",
+      "label": "Delperies",
+      "is_original": false,
+      "is_dub": false
+    },
+    {
+      "row_index": 4,
+      "artist": "Beenie Man",
+      "title": "Some A Sell Out",
+      "year": 2005,
+      "riddim": "Hard Drugs",
+      "producer": "Tad Dawkins & Tad Dawkins Jr.",
+      "label": "Tad's",
+      "is_original": false,
+      "is_dub": false
+    },
+    {
+      "row_index": 5,
+      "artist": "Buju Banton & Anthony Cruz",
+      "title": "Too Bloody",
+      "year": 2005,
+      "riddim": "Hard Drugs",
+      "producer": "Frederick Ricketts",
+      "label": "Delperies",
+      "is_original": false,
+      "is_dub": false
+    },
+    {
+      "row_index": 6,
+      "artist": "Capleton",
+      "title": "Mek It Blaze",
+      "year": 2005,
+      "riddim": "Hard Drugs",
+      "producer": "Frederick Ricketts",
+      "label": "Delperies",
+      "is_original": false,
+      "is_dub": false
+    },
+    {
+      "row_index": 7,
+      "artist": "Chezidek",
+      "title": "Wrong Law",
+      "year": 2005,
+      "riddim": "Hard Drugs",
+      "producer": "Tad Dawkins & Tad Dawkins Jr.",
+      "label": "Tad's",
+      "is_original": false,
+      "is_dub": false
+    },
+    {
+      "row_index": 8,
+      "artist": "Chuck Fender",
+      "title": "Hungry Attack",
+      "year": 2005,
+      "riddim": "Hard Drugs",
+      "producer": "Frederick Ricketts",
+      "label": "Delperies",
+      "is_original": false,
+      "is_dub": false
+    },
+    {
+      "row_index": 9,
+      "artist": "Danny English",
+      "title": "Girlfriend",
+      "year": 2005,
+      "riddim": "Hard Drugs",
+      "producer": "Frederick Ricketts",
+      "label": "Delperies",
+      "is_original": false,
+      "is_dub": false
+    },
+    {
+      "row_index": 10,
+      "artist": "DYCR",
+      "title": "The Barber",
+      "year": 2005,
+      "riddim": "Hard Drugs",
+      "producer": "Tad Dawkins & Tad Dawkins Jr.",
+      "label": "Tad's",
+      "is_original": false,
+      "is_dub": false
+    },
+    {
+      "row_index": 11,
+      "artist": "Fantan Mojah",
+      "title": "Never Too Late",
+      "year": 2005,
+      "riddim": "Hard Drugs",
+      "producer": "Tad Dawkins & Tad Dawkins Jr.",
+      "label": "Tad's",
+      "is_original": false,
+      "is_dub": false
+    },
+    {
+      "row_index": 12,
+      "artist": "Fantan Mojah & Singing Flasher",
+      "title": "Authentic Love",
+      "year": 2005,
+      "riddim": "Hard Drugs",
+      "producer": "Frederick Ricketts",
+      "label": "Delperies",
+      "is_original": false,
+      "is_dub": false
+    },
+    {
+      "row_index": 13,
+      "artist": "Flourgon",
+      "title": "Food For The Poor",
+      "year": 2005,
+      "riddim": "Hard Drugs",
+      "producer": "Frederick Ricketts",
+      "label": "Delperies",
+      "is_original": false,
+      "is_dub": false
+    },
+    {
+      "row_index": 14,
+      "artist": "Frisco Kid",
+      "title": "Crazy And Wild",
+      "year": 2005,
+      "riddim": "Hard Drugs",
+      "producer": "Frederick Ricketts",
+      "label": "Delperies",
+      "is_original": false,
+      "is_dub": false
+    },
+    {
+      "row_index": 15,
+      "artist": "George Nooks",
+      "title": "Road Block",
+      "year": 2005,
+      "riddim": "Hard Drugs",
+      "producer": "Tad Dawkins & Tad Dawkins Jr.",
+      "label": "Tad's",
+      "is_original": false,
+      "is_dub": false
+    },
+    {
+      "row_index": 16,
+      "artist": "Gregory Isaacs",
+      "title": "Crack Head",
+      "year": 2005,
+      "riddim": "Hard Drugs",
+      "producer": "Tad Dawkins & Tad Dawkins Jr.",
+      "label": "Tad's",
+      "is_original": false,
+      "is_dub": false
+    },
+    {
+      "row_index": 17,
+      "artist": "Gregory Isaacs",
+      "title": "Hard Drugs",
+      "year": 2005,
+      "riddim": "Hard Drugs",
+      "producer": "Tad Dawkins & Tad Dawkins Jr.",
+      "label": "Tad's",
+      "is_original": false,
+      "is_dub": false
+    },
+    {
+      "row_index": 18,
+      "artist": "Junior Kelly",
+      "title": "Loving None Stop",
+      "year": 2005,
+      "riddim": "Hard Drugs",
+      "producer": "Tad Dawkins & Tad Dawkins Jr.",
+      "label": "Tad's",
+      "is_original": false,
+      "is_dub": false
+    },
+    {
+      "row_index": 19,
+      "artist": "Leroy Smart",
+      "title": "Pain And Agony",
+      "year": 2005,
+      "riddim": "Hard Drugs",
+      "producer": "Frederick Ricketts",
+      "label": "Delperies",
+      "is_original": false,
+      "is_dub": false
+    },
+    {
+      "row_index": 20,
+      "artist": "Luciano",
+      "title": "Too Much Too Long",
+      "year": 2005,
+      "riddim": "Hard Drugs",
+      "producer": "Frederick Ricketts",
+      "label": "Delperies",
+      "is_original": false,
+      "is_dub": false
+    },
+    {
+      "row_index": 21,
+      "artist": "Lukie D",
+      "title": "Your Love",
+      "year": 2005,
+      "riddim": "Hard Drugs",
+      "producer": "Frederick Ricketts",
+      "label": "Delperies",
+      "is_original": false,
+      "is_dub": false
+    },
+    {
+      "row_index": 22,
+      "artist": "Macka Diamond",
+      "title": "Impotent",
+      "year": 2005,
+      "riddim": "Hard Drugs",
+      "producer": "Tad Dawkins & Tad Dawkins Jr.",
+      "label": "Tad's",
+      "is_original": false,
+      "is_dub": false
+    },
+    {
+      "row_index": 23,
+      "artist": "Mad Cobra",
+      "title": "Too Much Brain A Fry",
+      "year": 2005,
+      "riddim": "Hard Drugs",
+      "producer": "Frederick Ricketts",
+      "label": "Delperies",
+      "is_original": false,
+      "is_dub": false
+    },
+    {
+      "row_index": 24,
+      "artist": "Mikeylous",
+      "title": "Sticky",
+      "year": 2005,
+      "riddim": "Hard Drugs",
+      "producer": "Frederick Ricketts",
+      "label": "Delperies",
+      "is_original": false,
+      "is_dub": false
+    },
+    {
+      "row_index": 25,
+      "artist": "Perfect",
+      "title": "For My Family",
+      "year": 2005,
+      "riddim": "Hard Drugs",
+      "producer": "Frederick Ricketts",
+      "label": "Delperies",
+      "is_original": false,
+      "is_dub": false
+    },
+    {
+      "row_index": 26,
+      "artist": "Perfect",
+      "title": "Ganja Spliff",
+      "year": 2005,
+      "riddim": "Hard Drugs",
+      "producer": "Tad Dawkins & Tad Dawkins Jr.",
+      "label": "Tad's",
+      "is_original": false,
+      "is_dub": false
+    },
+    {
+      "row_index": 27,
+      "artist": "Pinchers",
+      "title": "Fire",
+      "year": 2005,
+      "riddim": "Hard Drugs",
+      "producer": "Frederick Ricketts",
+      "label": "Delperies",
+      "is_original": false,
+      "is_dub": false
+    },
+    {
+      "row_index": 28,
+      "artist": "Ras Ghandi",
+      "title": "9 Months Pregnant",
+      "year": 2005,
+      "riddim": "Hard Drugs",
+      "producer": "Frederick Ricketts",
+      "label": "Delperies",
+      "is_original": false,
+      "is_dub": false
+    },
+    {
+      "row_index": 29,
+      "artist": "Richie Spice",
+      "title": "Operation King Fish",
+      "year": 2005,
+      "riddim": "Hard Drugs",
+      "producer": "Frederick Ricketts",
+      "label": "Delperies",
+      "is_original": false,
+      "is_dub": false
+    },
+    {
+      "row_index": 30,
+      "artist": "Ricky General",
+      "title": "Strong Love",
+      "year": 2005,
+      "riddim": "Hard Drugs",
+      "producer": "Frederick Ricketts",
+      "label": "Delperies",
+      "is_original": false,
+      "is_dub": false
+    },
+    {
+      "row_index": 31,
+      "artist": "Sizzla",
+      "title": "Come Give Me Love",
+      "year": 2005,
+      "riddim": "Hard Drugs",
+      "producer": "Frederick Ricketts",
+      "label": "Delperies",
+      "is_original": false,
+      "is_dub": false
+    },
+    {
+      "row_index": 32,
+      "artist": "Spanner Banner",
+      "title": "Bright Fire",
+      "year": 2005,
+      "riddim": "Hard Drugs",
+      "producer": "Frederick Ricketts",
+      "label": "Delperies",
+      "is_original": false,
+      "is_dub": false
+    },
+    {
+      "row_index": 33,
+      "artist": "Thriller U",
+      "title": "She Can't Hold Out",
+      "year": 2005,
+      "riddim": "Hard Drugs",
+      "producer": "Frederick Ricketts",
+      "label": "Delperies",
+      "is_original": false,
+      "is_dub": false
+    },
+    {
+      "row_index": 34,
+      "artist": "Turbulence",
+      "title": "One Don",
+      "year": 2005,
+      "riddim": "Hard Drugs",
+      "producer": "Tad Dawkins & Tad Dawkins Jr.",
+      "label": "Tad's",
+      "is_original": false,
+      "is_dub": false
+    }
+  ],
+  "pickup": [
+{ "row_index": 0, "tier": "S", "role": "original" },
+
+{ "row_index": 1,  "tier": "A", "role": "classic" },
+
+{ "row_index": 4,  "tier": "S", "role": "modern" },
+{ "row_index": 5,  "tier": "A", "role": "modern" },
+{ "row_index": 6,  "tier": "A", "role": "modern" },
+{ "row_index": 7,  "tier": "A", "role": "modern" },
+{ "row_index": 11, "tier": "A", "role": "modern" },
+{ "row_index": 15, "tier": "B", "role": "modern" },
+{ "row_index": 18, "tier": "A", "role": "modern" },
+{ "row_index": 20, "tier": "S", "role": "modern" },
+{ "row_index": 29, "tier": "S", "role": "modern" },
+{ "row_index": 31, "tier": "A", "role": "modern" },
+{ "row_index": 34, "tier": "B", "role": "modern" }
+
+
+]
+}
