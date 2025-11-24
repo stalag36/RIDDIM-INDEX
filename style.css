@@ -44,11 +44,18 @@ body{
   margin:0;
   background:var(--navy-bg);
   color:var(--text);
-  font:var(--fs)/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",
-       "Helvetica Neue",Arial,sans-serif;
-  font-variant-numeric:tabular-nums;
+  font:var(--fs)/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI",
+       "Helvetica Neue", Arial, sans-serif;
+  font-variant-numeric: tabular-nums;
   -webkit-text-size-adjust:100%;
 }
+
+/* ==== Font smoothing ==== */
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 
 /* ========== Layout base ========== */
 
@@ -68,7 +75,7 @@ body{
 
 .title{
   margin:0;
-  font-size:22px;
+  font-size:28px;
   font-weight:800;
   letter-spacing:.2px;
 }
@@ -94,6 +101,7 @@ body{
   color:inherit;
   text-decoration:none;
   cursor:pointer;
+  font-family:"Anton", sans-serif; /* タイトルのみ Anton に */
 }
 
 .titleLink:visited{
@@ -710,6 +718,6 @@ body.indexPage .card .row:last-child{
     --fs:16px;
   }
   .metaVal {
-    margin-left: -20px; /* ←お好みで調整：標準 -35px を右方向へ寄せる */
+    margin-left: -20px; /* 標準 -35px から少し右へ寄せる */
   }
 }
