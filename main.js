@@ -142,6 +142,73 @@
       return String(a).localeCompare(String(b), undefined, { sensitivity: "base" });
     }
 
+    // detail.js と揃えたファイル名キー正規化
+    function normalizeFilenameKey(raw) {
+      if (!raw) return "";
+
+      let s = raw.trim();
+      s = s.replace(/\s+riddim\s*$/i, "");
+      s = s.replace(/\([^)]*\)/g, "");
+      s = s.replace(/\./g, "_");
+      s = s.replace(/\s+/g, "_");
+      s = s.toLowerCase();
+      s = s.replace(/[^a-z0-9_]/g, "");
+      return s;
+    }
+
+    /* ========================================
+       4-2. detail.json の事前読み込み（プレフェッチ）
+       ======================================== */
+
+    const prefetchedKeys = new Set();
+
+    async function warmupDetailCache(riddimName) {
+      try {
+        if (!riddimName) return;
+
+        const key = normalizeFilenameKey(riddimName);
+        if (!key) return;
+
+        // すでにプレフェッチ済みならスキップ
+        if (prefetchedKeys.has(key)) return;
+        prefetchedKeys.add(key);
+
+        const cacheKey = `riddim:${key}`;
+
+        // sessionStorage に既にあればネットワークアクセス不要
+        try {
+          if (sessionStorage.getItem(cacheKey)) return;
+        } catch {
+          // sessionStorage が使えない環境ではそのままフェッチだけ試す
+        }
+
+        const candidates = [
+          `data/${key}.json`,
+          `data/${key}_full.json`,
+          `data/${key.replace(/__/, "._")}.json`,
+        ];
+
+        for (const url of candidates) {
+          try {
+            const res = await fetch(url);
+            if (!res.ok) continue;
+            const rec = await res.json();
+
+            try {
+              sessionStorage.setItem(cacheKey, JSON.stringify(rec));
+            } catch {
+              // 容量オーバーなどは無視
+            }
+            break;
+          } catch {
+            // 次の候補を試す
+          }
+        }
+      } catch {
+        // プレフェッチはあくまで「おまけ」なのでエラーは握りつぶす
+      }
+    }
+
     /* ========================================
        5. セレクトボックスの中身生成
        ======================================== */
@@ -376,7 +443,6 @@
         const row = document.createElement("div");
         row.className = "row row--click";
 
-        // detail.html に渡すリディムキー
         const riddimKey = it.riddim || it.name || "";
         row.dataset.riddimKey = riddimKey;
 
@@ -406,6 +472,19 @@
             goDetail();
           }
         });
+
+        // ホバー・フォーカス時にもプレフェッチ
+        row.addEventListener("mouseenter", () => {
+          warmupDetailCache(riddimKey);
+        });
+        row.addEventListener("focus", () => {
+          warmupDetailCache(riddimKey);
+        });
+
+        // 画面上部の数件は自動でプレフェッチ
+        if (i < start + 5) {
+          warmupDetailCache(riddimKey);
+        }
 
         inner.appendChild(row);
       }
