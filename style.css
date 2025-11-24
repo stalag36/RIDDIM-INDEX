@@ -508,6 +508,7 @@ body{
   -webkit-user-select:none;
   user-select:none;
   pointer-events:none;
+  margin-left:6px;
 }
 
 .songRow .artist{
@@ -542,7 +543,7 @@ body{
 .card .songList{
   list-style:none;
   margin:0;
-  padding-left:var(--align-left);
+  padding-left:10px;
   padding-right:10px;
 }
 
