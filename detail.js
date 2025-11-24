@@ -89,7 +89,7 @@
       const key = normalizeFilenameKey(rawRiddim);
       if (!key) return;
 
-      const cacheKey = `riddim:${key}`;  // ★追加：キャッシュキー
+      const cacheKey = `riddim:${key}`;
       const candidates = [
         `data/${key}.json`,
         `data/${key}_full.json`,
@@ -98,9 +98,7 @@
 
       let rec = null;
 
-      /* ----------------------------------------
-         3-A. sessionStorage から即取得（最速）
-         ---------------------------------------- */
+      /* 3-A. sessionStorage から即取得 */
       const cached = sessionStorage.getItem(cacheKey);
       if (cached) {
         try {
@@ -108,17 +106,13 @@
         } catch {}
       }
 
-      /* ----------------------------------------
-         3-B. キャッシュが無い場合のみ fetch
-         ---------------------------------------- */
+      /* 3-B. キャッシュが無い場合のみ fetch */
       if (!rec) {
         for (const url of candidates) {
           try {
             const res = await fetch(url);
             if (!res.ok) continue;
             rec = await res.json();
-
-            // ★追加：sessionStorage に保存
             sessionStorage.setItem(cacheKey, JSON.stringify(rec));
             break;
           } catch {}
@@ -139,9 +133,7 @@
       document.title = "RIDDIM INDEX – " + displayName;
       setText("riddimTitle", displayName);
 
-      /* ----------------------------------------
-         3-2. メタ情報
-         ---------------------------------------- */
+      /* 3-2. メタ情報 */
       const baseLabel =
         rec.label ||
         (firstTrack && firstTrack.label) ||
@@ -167,9 +159,7 @@
 
       setText("aka", akaArr.length ? akaArr.filter(Boolean).join(" ／ ") : "—");
 
-      /* ----------------------------------------
-         3-3. PICKUP 展開
-         ---------------------------------------- */
+      /* 3-3. PICKUP 展開 */
 
       const ul = document.getElementById("pickup");
       if (!ul) return;
@@ -177,7 +167,6 @@
 
       let picks = [];
 
-      // row_index から引き当て
       if (Array.isArray(rec.pickup) && rec.pickup.length) {
         const pickupArr = rec.pickup;
         if (!("artist" in pickupArr[0]) && tracks.length) {
@@ -192,7 +181,6 @@
         }
       }
 
-      // original を追加
       if (rec.original?.artist && rec.original?.title) {
         const orig = rec.original;
         const origKey = `${orig.artist}___${orig.title}`.toLowerCase();
@@ -201,7 +189,6 @@
         }
       }
 
-      // ソート
       picks.sort((a, b) => {
         const ay = Number(a.year);
         const by = Number(b.year);
@@ -213,7 +200,6 @@
         return 0;
       });
 
-      // 描画
       picks.forEach((p) => {
         let artist = cleanArtist(p.artist || "—");
         let title = cleanTitle(p.title || "—");
@@ -226,9 +212,20 @@
 
         const hasValid = (artist && artist !== "—") || (title && title !== "—");
 
+        // ★ year 用クラス名を .year → .songYear に変更
         const yearHTML = year
-          ? `<span class="year" aria-hidden="true"> (${year})</span>`
-          : "";
+         ? `<span class="songYear" aria-hidden="true"
+            style="
+             user-select: none;
+             -webkit-user-select: none;
+             -moz-user-select: none;
+             -ms-user-select: none;
+             margin-left: 4px;
+             opacity: 0.85;
+            "
+           >(${year})</span>`
+         : "";
+
 
         if (hasValid) {
           const queryStr = `${artist} ${title}`.trim();
@@ -263,9 +260,7 @@
 
       setupTouchHoverForSongs();
 
-      /* ----------------------------------------
-         3-4. YouTube ボタン
-         ---------------------------------------- */
+      /* 3-4. YouTube ボタン */
 
       const ytBtn = document.getElementById("ytRiddimBtn");
       if (ytBtn) {
@@ -281,9 +276,7 @@
         };
       }
 
-      /* ----------------------------------------
-         3-5. PICKUP 高さ調整
-         ---------------------------------------- */
+      /* 3-5. PICKUP 高さ調整 */
 
       function adjustPickupHeight() {
         try {
