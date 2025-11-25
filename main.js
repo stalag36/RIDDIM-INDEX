@@ -420,6 +420,52 @@
     hYear.addEventListener("click", () => toggleSortByHeader("year"));
 
     /* ========================================
+       8-1. リセットボタン（検索クリア）
+       ======================================== */
+    const resetBtn = document.getElementById("resetFilters");
+
+    if (resetBtn) {
+      // クリック（PC / モバイル共通）
+      resetBtn.addEventListener("click", () => {
+        // 入力欄クリア
+        qInput.value = "";
+        q = "";
+        qRe = null;
+
+        // セレクト初期化
+        filterLabel = "All";
+        filterDecade = "All";
+        labelSelect.value = "All";
+        yearSelect.value = "All";
+
+        // 反映
+        applyFiltersAndSort();
+      });
+
+      // スマホ用：タップ時に「押してる感」を出す
+      resetBtn.addEventListener(
+        "touchstart",
+        () => {
+          resetBtn.classList.add("pressed");
+        },
+        { passive: true }
+      );
+
+      ["touchend", "touchcancel"].forEach((ev) => {
+        resetBtn.addEventListener(
+          ev,
+          () => {
+            // 少しだけ残してから戻すと「押した感」が出る
+            setTimeout(() => {
+              resetBtn.classList.remove("pressed");
+            }, 80);
+          },
+          { passive: true }
+        );
+      });
+    }
+
+    /* ========================================
        9. 描画処理（バーチャルリスト）
        ======================================== */
 

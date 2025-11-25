@@ -773,3 +773,45 @@ body.indexPage .card .row:last-child{
     margin-left: -20px;
   }
 }
+
+/* ========================================
+   9. リセットボタン（検索条件クリア）
+   ======================================== */
+
+.resetBtn{
+  height: var(--ctl-h);
+  width: 40px;
+  flex: 0 0 auto;
+  background: var(--chip-bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text-soft);
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+}
+
+.resetBtn:focus{
+  outline: 1px solid var(--accent);
+  outline-offset: 2px;
+}
+
+@media (hover:hover){
+  .resetBtn:hover{
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+}
+
+/* タップ中 / 押下時の見た目 */
+.resetBtn:active,
+.resetBtn.pressed{
+  background: #211f35;          /* ほんの少し明るめに */
+  border-color: var(--accent);  /* 枠を強調 */
+  color: var(--accent);         /* 矢印も強調 */
+  transform: scale(0.96);       /* ちょっとだけ縮む */
+}
