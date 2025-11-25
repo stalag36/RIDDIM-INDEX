@@ -212,7 +212,6 @@
 
         const hasValid = (artist && artist !== "—") || (title && title !== "—");
 
-        // ★ year 用クラス名を .year → .songYear に変更
         const yearHTML = year
          ? `<span class="songYear" aria-hidden="true"
             style="
@@ -225,7 +224,6 @@
             "
            >(${year})</span>`
          : "";
-
 
         if (hasValid) {
           const queryStr = `${artist} ${title}`.trim();
@@ -307,6 +305,47 @@
 
       requestAnimationFrame(adjustPickupHeight);
       window.addEventListener("resize", adjustPickupHeight);
+
+      /* ========================================
+         3-6. 動的 JSON-LD を挿入
+         ======================================== */
+      function injectJsonLd(rec, displayName, baseLabel, baseYear, producer, akaArr) {
+        const ld = {
+          "@context": "https://schema.org",
+          "@type": "CreativeWork",
+          "name": displayName,
+          "alternateName": akaArr.length ? akaArr : undefined,
+          "description": "RIDDIM INDEX のリディム詳細データ。",
+          "datePublished": baseYear || undefined,
+          "recordLabel": baseLabel || undefined,
+          "producer": producer || undefined,
+          "url": location.href,
+          "isPartOf": {
+            "@type": "WebSite",
+            "name": "RIDDIM INDEX",
+            "url": "https://italisle.jp/"
+          }
+        };
+
+        // 古いJSON-LDを削除（更新対応）
+        document.querySelectorAll('script[data-dynamic-jsonld]').forEach(el => el.remove());
+
+        const script = document.createElement("script");
+        script.type = "application/ld+json";
+        script.setAttribute("data-dynamic-jsonld", "1");
+        script.textContent = JSON.stringify(ld);
+        document.head.appendChild(script);
+      }
+
+      // ★ load() 内の最後で JSON-LD を生成
+      injectJsonLd(
+        rec,
+        displayName,
+        cleanLabel(baseLabel),
+        baseYear,
+        producer,
+        akaArr
+      );
 
     } catch (e) {
       console.error(e);
