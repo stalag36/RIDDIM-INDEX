@@ -1,22 +1,25 @@
 <!DOCTYPE html>
 <html lang="ja" class="detailLock">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+  <!-- ★ SEO用 description（detailページ用） -->
+  <meta name="description" content="RIDDIM INDEX のリディム詳細ページ。レゲエのリディム情報をAIで整理し、別名・レーベル・リリース年・プロデューサーなどの詳細を閲覧できます。" />
+
   <title>RIDDIM INDEX – Detail</title>
 
-  <link rel="icon" href="ITALISLE.svg" type="image/svg+xml">
-
-  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="ITALISLE.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="style.css" />
 </head>
+
 <body class="detailPage">
 
   <header class="masthead container detailPage">
     <h1 class="title">
-  <a href="index.html" class="titleLink">RIDDIM INDEX</a>
-  <span class="ver">v1.0</span>
-</h1>
-
+      <a href="index.html" class="titleLink">RIDDIM INDEX</a>
+      <span class="ver">v1.0</span>
+    </h1>
     <div class="titleline"></div>
   </header>
 
@@ -29,8 +32,7 @@
           id="ytRiddimBtn"
           class="ytBtn"
           type="button"
-          aria-label="YouTubeでこのリディムを検索"
-        >
+          aria-label="YouTubeでこのリディムを検索">
           <span class="ytIcon" aria-hidden="true"></span>
         </button>
       </div>
@@ -64,13 +66,12 @@
     <ul id="pickup" class="songList"></ul>
   </section>
 
-  <!-- 必要なら v=2 など付けてキャッシュ回避 -->
   <script src="detail.js"></script>
 
-<footer class="footerNote">
-  ChatGPTによって作成しているため、情報は必ずしも正しいとは限りません。<br>
-  重要な情報は確認するようにしてください。
-</footer>
+  <footer class="footerNote">
+    ChatGPTによって作成しているため、情報は必ずしも正しいとは限りません。<br>
+    重要な情報は確認するようにしてください。
+  </footer>
 
 </body>
 </html>
