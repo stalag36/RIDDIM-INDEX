@@ -4,32 +4,23 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
 
-  <!-- ★ SEO用 description（detailページ用） -->
-  <meta name="description" content="RIDDIM INDEX のリディム詳細ページ。レゲエのリディム情報をAIで整理し、詳細を閲覧できます。" />
-
-  <!-- ★ ここを追加：このページ自体はインデックスさせない -->
+  <meta name="description" content="RIDDIM INDEX のリディム詳細ページ。レゲエのリディム情報をAIで整理し、別名・レーベル・リリース年・プロデューサーなどの詳細を閲覧できます。" />
   <meta name="robots" content="noindex,follow" />
 
-  <!-- ★ 統一＆最適化した title（JSで上書きされるまでのデフォルト） -->
   <title>リディム詳細 | RIDDIM INDEX – レゲエ・リディム データベース</title>
 
-  <!-- Favicon -->
   <link rel="icon" href="ITALISLE.svg" type="image/svg+xml" />
-
-  <!-- メインCSS -->
   <link rel="stylesheet" href="style.css" />
 
-  <!-- ★ OGP（SNSシェア用の基本情報。内容は汎用の「リディム詳細ページ」） -->
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="RIDDIM INDEX" />
   <meta property="og:title" content="リディム詳細 | RIDDIM INDEX – レゲエ・リディム データベース" />
-  <meta property="og:description" content="RIDDIM INDEX のリディム詳細ページ。レゲエのリディム情報をAIで整理し、詳細を閲覧できます。" />
+  <meta property="og:description" content="RIDDIM INDEX のリディム詳細ページ。レゲエのリディム情報をAIで整理し、別名・レーベル・リリース年・プロデューサーなどの詳細を閲覧できます。" />
   <meta property="og:url" content="https://italisle.jp/detail.html" />
 
-  <!-- ★ Twitterカード（Xでの見え方用） -->
   <meta name="twitter:card" content="summary" />
   <meta name="twitter:title" content="リディム詳細 | RIDDIM INDEX – レゲエ・リディム データベース" />
-  <meta name="twitter:description" content="RIDDIM INDEX のリディム詳細ページ。レゲエのリディム情報をAIで整理し、詳細を閲覧できます。" />
+  <meta name="twitter:description" content="RIDDIM INDEX のリディム詳細ページ。レゲエのリディム情報をAIで整理し、別名・レーベル・リリース年・プロデューサーなどの詳細を閲覧できます。" />
 </head>
 
 <body class="detailPage">
@@ -37,16 +28,25 @@
   <header class="masthead container detailPage">
     <h1 class="title">
       <a href="index.html" class="titleLink">RIDDIM INDEX</a>
-      <span class="ver">v1.0</span>
+      <span class="ver">v1.1</span>
     </h1>
     <div class="titleline"></div>
   </header>
 
-  <!-- リディムカード -->
+  <!-- ▼ リディムカード -->
   <section class="card container">
     <div class="cardHead">
       <div class="cardHead__row">
+
+        <!-- ★★ お気に入りトグルを追加 ★★ -->
+        <button id="favDetailToggle" class="favToggle" type="button" aria-label="お気に入り">
+          ☆
+        </button>
+
+        <!-- ▼ リディム名 -->
         <h2 id="riddimTitle" class="cardHead__title"></h2>
+
+        <!-- ▼ YouTube ボタン -->
         <button
           id="ytRiddimBtn"
           class="ytBtn"
@@ -54,6 +54,7 @@
           aria-label="YouTubeでこのリディムを検索">
           <span class="ytIcon" aria-hidden="true"></span>
         </button>
+
       </div>
     </div>
 
@@ -62,14 +63,17 @@
         <div class="metaKey">別名：</div>
         <div class="metaVal" id="aka">—</div>
       </div>
+
       <div class="metaRow">
         <div class="metaKey">レーベル：</div>
         <div class="metaVal" id="label">—</div>
       </div>
+
       <div class="metaRow">
         <div class="metaKey">リリース年：</div>
         <div class="metaVal" id="year">—</div>
       </div>
+
       <div class="metaRow">
         <div class="metaKey">プロデューサー：</div>
         <div class="metaVal" id="producer">—</div>
@@ -77,7 +81,7 @@
     </div>
   </section>
 
-  <!-- PICKUPカード -->
+  <!-- ▼ PICKUPカード -->
   <section class="card container">
     <div class="cardHead">
       <h2 class="cardHead__title">PICKUP</h2>

@@ -1,20 +1,24 @@
-/* v1.0.2 — RIDDIM INDEX Twitch-dark テーマ + タッチホバー + 分割ホバー（PC / モバイル） */
+/* =========================================================
+   RIDDIM INDEX  v1.1  —  Clean & Organized CSS
+   ========================================================= */
 
-/* ========================================
+/* =========================================================
    1. トークン / ベース設定
-   ======================================== */
+   ========================================================= */
 
 :root{
-  /* スペーシングトークン */
+  /* spacing */
   --sp-2: 2px;
   --sp-4: 4px;
   --sp-6: 6px;
   --sp-8: 8px;
   --sp-10: 10px;
   --sp-12: 12px;
+
+  /* control height */
   --ctl-h: 36px;
 
-  /* カラー（ダークテーマ） */
+  /* colors (dark theme) */
   --bg:          #0e0e10;
   --surface:     #18181b;
   --border:      #26262c;
@@ -24,13 +28,14 @@
   --text-soft:   #c8c8d0;
   --chip-bg:     #1f1f23;
 
-  /* ベースフォントサイズ（モバイル・タブレット） */
+  /* star color */
+  --star-off: #f0c25a;
+  --star-on:  #ffd864;
+
+  /* base font size (mobile/tablet) */
   --fs: 14px;
 
-  /* 詳細ページの整列用ジオメトリ
-     card-left=10px, metaGrid-left=10px, metaRow-inner-left=6px
-     → カード内側から 16px 揃え
-  */
+  /* detail page geometry */
   --card-left:      10px;
   --metagrid-left:  10px;
   --metarow-left:   6px;
@@ -42,8 +47,7 @@
   box-sizing: border-box;
 }
 
-html,
-body{
+html, body{
   height: 100%;
 }
 
@@ -59,9 +63,9 @@ body{
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* ========================================
-   2. 共通レイアウト
-   ======================================== */
+/* =========================================================
+   2. レイアウト
+   ========================================================= */
 
 .container{
   width: calc(100% - 24px);
@@ -69,14 +73,14 @@ body{
   margin: 0 auto;
 }
 
-/* ========================================
-   3. ヘッダー / タイトル / 検索・フィルタ
-   ======================================== */
+/* =========================================================
+   3. ヘッダー / タイトル / 検索 / フィルタ
+   ========================================================= */
 
 .masthead{
   padding: 16px 0 4px;
-  border-bottom: none;
   background: transparent;
+  border-bottom: none;
 }
 
 .title{
@@ -115,17 +119,16 @@ body{
   }
 }
 
-/* 入力欄（検索ボックス） */
+/* 検索窓 */
 .input{
   height: var(--ctl-h);
   width: 100%;
+  padding: 0 12px;
   background: var(--chip-bg);
   border: 1px solid var(--border);
   border-radius: 10px;
-  padding: 0 12px;
   color: var(--text-soft);
   outline: none;
-  /* iOS の自動ズーム防止のため 16px 以上にする */
   font-size: 16px;
 }
 
@@ -142,44 +145,83 @@ body{
   border-color: var(--accent);
 }
 
-/* フィルタ（ラベル / 年セレクト） */
+/* フィルタ */
 .filters{
   margin-top: 4px;
   display: flex;
   gap: var(--sp-10);
-  padding: 0;
-  border-bottom: none;
   background: transparent;
 }
 
 .filters select{
   height: var(--ctl-h);
-  min-width: 150px;
+  min-width: 120px;
+  padding: 0 10px;
   background: var(--chip-bg);
   border: 1px solid var(--border);
   border-radius: 10px;
   color: var(--text-soft);
-  padding: 0 12px;
-  /* こちらも 16px 固定でズーム防止 */
-  font-size: 16px;
+  font-size: 13px;
 }
 
 .filters select:focus{
   border-color: var(--accent);
 }
 
-/* 件数などのメタ情報行 */
-.meta{
-  margin-top: var(--sp-8);
-  margin-bottom: 0;
-  color: var(--text-soft);
+/* ★ フィルタボタン */
+.favFilterBtn{
+  height: var(--ctl-h);
+  width: 40px;
+  flex: 0 0 auto;
+  background: var(--chip-bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0;
+  font-size: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  line-height: 1;
 }
 
-/* ========================================
-   4. 共通コンポーネント（カード / ソート / フッターなど）
-   ======================================== */
+.favFilterBtn::before{
+  content: "★";
+  font-size: 20px;
+  color: var(--star-off);
+}
 
-/* カード共通 */
+.favFilterBtn:focus{
+  outline: 1px solid var(--accent);
+  outline-offset: 2px;
+}
+
+@media (hover:hover){
+  .favFilterBtn:hover{
+    border-color: var(--accent);
+  }
+}
+
+.favFilterBtn.is-active{
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.favFilterBtn.is-active::before{
+  color: var(--star-on);
+}
+
+.meta{
+  margin-top: var(--sp-8);
+  margin-bottom: 0;          /* ← 下の余白を詰める */
+  color: var(--text-soft);
+  font-size: 12px;           /* ← ソート文を少し小さめに */
+}
+
+/* =========================================================
+   4. 共通コンポーネント（カード / ソート / フッター）
+   ========================================================= */
+
 .card{
   margin: 12px auto;
   background: var(--surface);
@@ -187,11 +229,9 @@ body{
   border-radius: 12px;
   display: flex;
   flex-direction: column;
-  min-height: 0;
   overflow: hidden;
 }
 
-/* 旧ソートボタン用（現状未使用・保留） */
 .toolbar{
   display: flex;
   gap: 8px;
@@ -203,17 +243,18 @@ body{
   border-bottom: 1px solid var(--border);
 }
 
+/* ソートボタン */
 .sortBtn{
   height: var(--ctl-h);
+  min-width: 110px;
+  padding: 0 10px;
   background: var(--chip-bg);
   border: 1px solid var(--border);
   border-radius: 10px;
   color: var(--text-soft);
-  padding: 0 10px;
-  min-width: 110px;
   display: flex;
-  align-items: center;
   gap: 8px;
+  align-items: center;
   justify-content: center;
   cursor: pointer;
 }
@@ -230,9 +271,8 @@ body{
   text-align: center;
 }
 
-/* 丸型 YouTube ボタン */
+/* YouTube */
 .ytBtn{
-  flex: 0 0 auto;
   width: 26px;
   height: 26px;
   border-radius: 999px;
@@ -241,7 +281,6 @@ body{
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0;
   cursor: pointer;
 }
 
@@ -250,7 +289,6 @@ body{
   outline-offset: 2px;
 }
 
-/* 再生マーク（三角形） */
 .ytIcon{
   width: 0;
   height: 0;
@@ -261,26 +299,22 @@ body{
 }
 
 @media (hover:hover){
-  .ytBtn:hover{
-    border-color: var(--accent);
-  }
+  .ytBtn:hover{ border-color: var(--accent); }
 }
 
-/* フッター注意書き */
+/* フッター */
 .footerNote{
   text-align: center;
   color: var(--text-soft);
   opacity: .6;
   font-size: 10px;
   padding: 15px 0 20px;
-  line-height: 1.4;
 }
 
-/* ========================================
-   5. インデックスページ用コンポーネント
-   ======================================== */
+/* =========================================================
+   5. インデックスページ（columns / rows / ★）
+   ========================================================= */
 
-/* ヘッダー行（Riddim / レーベル / 年） */
 .columns{
   display: flex;
   gap: 2px;
@@ -290,12 +324,7 @@ body{
   color: var(--text-soft);
 }
 
-.columns .name{
-  flex: 1 1 45%;
-  min-width: 120px;
-  cursor: pointer;
-}
-
+.columns .name,
 .columns .label{
   flex: 1 1 45%;
   min-width: 120px;
@@ -313,7 +342,7 @@ body{
   color: var(--accent);
 }
 
-/* リストコンテナ */
+/* rows */
 .list{
   flex: 1 1 auto;
   min-height: 120px;
@@ -321,12 +350,11 @@ body{
   padding: 0 var(--sp-6);
 }
 
-/* 行（リディムの1行） */
 .row{
   display: flex;
   gap: 6px;
   align-items: center;
-  padding: var(--sp-6) var(--sp-6);
+  padding: var(--sp-6);
   border-bottom: 1px dashed var(--border-dash);
   color: var(--text-soft);
 }
@@ -335,18 +363,11 @@ body{
   border-bottom: none;
 }
 
-/* 行内の各列共通 */
-.name{
-  flex: 1 1 45%;
-  min-width: 120px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
+/* name/label/year */
+.name,
 .label{
   flex: 1 1 45%;
-  min-width: 120px;
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -355,10 +376,49 @@ body{
 .year{
   flex: 0 0 76px;
   text-align: right;
-  white-space: nowrap;
 }
 
-/* クリック可能行のホバー用レイヤー */
+/* ★ トグル */
+.row .name{
+  display: flex;
+  align-items: center;
+  margin-left: -6px;
+}
+
+.favToggle{
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+  padding: 0;
+  margin-right: 1px;
+  color: var(--star-off);
+  width: 1.2em;
+  height: 1.2em;
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  top: 1px;
+}
+
+.favToggle.is-on{
+  color: var(--star-on);
+}
+
+@media (hover:hover){
+  .favToggle:hover{ transform: translateY(-1px); }
+}
+
+.nameText{
+  flex: 1 1 auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* クリック範囲 */
 .row.row--click{
   position: relative;
   cursor: pointer;
@@ -374,60 +434,55 @@ body{
   transition: opacity .12s ease;
 }
 
-/* PC のみ :hover で発火 */
 @media (hover:hover){
-  .row.row--click:hover::before{
-    opacity: 1;
-  }
+  .row.row--click:hover::before{ opacity: 1; }
 }
 
-/* スマホ / タッチは JS から touch-hover クラスで発火 */
 .row.row--click.touch-hover::before{
   opacity: 1;
 }
 
-/* ========================================
-   6. 詳細ページ用コンポーネント
-   ======================================== */
+/* =========================================================
+   6. 詳細ページ
+   ========================================================= */
 
-/* カードヘッダー（タイトル行とボタン） */
 .cardHead{
   padding: 6px 10px;
   border-bottom: 1px solid var(--border);
 }
 
-/* タイトル行 + YouTube ボタンのラッパー */
 .cardHead__row{
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-/* Riddim 名 / PICKUP 見出し */
 .cardHead__title{
   margin: 0;
   font-size: 18px;
   font-weight: 400;
-  letter-spacing: 0;
-  color: var(--text-main);
   padding-left: var(--title-pad-left);
-  flex: 0 1 auto;
-  margin-right: 0;
+  color: var(--text-main);
 }
 
-/* メタ情報グリッド */
+/* 詳細ページの★ */
+.detailPage .cardHead__row .favToggle{
+  font-size: 18px;
+  margin-right: -10px;
+  position: relative;
+  top: 1px;
+}
+
+/* メタ情報 */
 .metaGrid{
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 0;
   padding: 0 10px;
 }
 
 .metaRow{
   display: grid;
   grid-template-columns: 160px 1fr;
-  gap: 0;
-  padding: 8px 6px;
+  padding: 7px 6px;
   border-bottom: 1px dashed var(--border-dash);
 }
 
@@ -437,27 +492,25 @@ body{
 
 .metaKey{
   color: var(--text-soft);
-  font-weight: 400;
 }
 
 .metaVal{
   color: var(--text-soft);
-  margin-left: -35px;
+  margin-left: -60px;
 }
 
-/* PICKUP 曲リスト（UL） */
+/* PICKUP リスト */
 .songList{
   list-style: none;
-  margin: 0;
   padding: 0 10px;
+  margin: 0;
 }
 
-/* 曲行（LI 共通） */
 .songRow{
   display: flex;
   align-items: center;
   gap: 4px;
-  padding: 8px 0;
+  padding: 7px 0;
   border-bottom: 1px dashed var(--border-dash);
   color: var(--text-soft);
   position: relative;
@@ -468,7 +521,7 @@ body{
   border-bottom: none;
 }
 
-/* 曲頭のドット記号 */
+/* PICKUP 行内のテキスト */
 .songRow .dot{
   position: relative;
   left: -0.1em;
@@ -481,7 +534,6 @@ body{
   margin-left: 6px;
 }
 
-/* アーティスト / タイトル / 区切り記号 */
 .songRow .artist{
   font-weight: 400;
 }
@@ -498,71 +550,36 @@ body{
   pointer-events: none;
 }
 
-/* 詳細曲行ホバー用レイヤー（破線の上に重ねる） */
 .songRow::before{
   content: "";
   position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
+  inset: 0;
   background: rgba(255,255,255,0.05);
   opacity: 0;
   pointer-events: none;
   transition: opacity .12s ease;
 }
 
-/* PC の :hover */
 @media (hover:hover){
-  .songRow:hover::before{
-    opacity: 1;
-  }
+  .songRow:hover::before{ opacity: 1; }
 }
 
-/* スマホ用 touch-hover（detail.js からクラス付与） */
 .songRow.touch-hover::before{
   opacity: 1;
 }
 
-/* UL 側のパディングで揃える（LI 側は左パディングを持たない） */
-.card .songList{
-  list-style: none;
-  margin: 0;
-  padding-left: 10px;
-  padding-right: 10px;
-}
-
-.card .songList li,
-.card .songRow{
-  padding-left: 0;
-}
-
-/* PICKUP の YouTube リンク（行全体リンク） */
 .songLink{
   display: flex;
   align-items: center;
   gap: 4px;
-  width: 100%;
   color: var(--text-soft);
   text-decoration: none;
-  -webkit-tap-highlight-color: transparent;
 }
 
-.songLink:visited{
-  color: var(--text-soft);
-}
-
-@media (hover:hover){
-  .songLink:hover{
-    text-decoration: none;
-  }
-}
-
-/* ========================================
+/* =========================================================
    7. ページレイアウト（index / detail）
-   ======================================== */
+   ========================================================= */
 
-/* 詳細ページ全体レイアウト */
 body.detailPage{
   display: flex;
   flex-direction: column;
@@ -570,53 +587,30 @@ body.detailPage{
   overflow: hidden;
 }
 
-/* 詳細ヘッダーの詰め（従来どおり） */
 .detailPage .masthead{
   padding: 16px 0 0;
   margin-bottom: -4px;
 }
 
-.detailPage .titleline{
-  margin: 4px 0;
-}
-
-/* 詳細：1 枚目（リディムカード） */
 body.detailPage .card.container:first-of-type{
   flex: 0 0 auto;
   margin-top: 8px;
-  margin-bottom: 9px;
 }
 
-/* 詳細：2 枚目（PICKUP カード） */
 body.detailPage .card.container:nth-of-type(2){
   flex: 0 0 auto;
-  min-height: 0;
-  margin-top: 0;
-  margin-bottom: 0;
   display: flex;
   flex-direction: column;
+  margin-top: -3px;
+  margin-bottom: 0;
 }
 
-/* PICKUP 見出し部分は固定高さ */
-body.detailPage .card.container:nth-of-type(2) .cardHead{
-  flex: 0 0 auto;
-}
-
-/* 曲リストのみスクロール対象（高さは JS から --pickup-max-height をセット） */
 body.detailPage .card.container:nth-of-type(2) .songList{
   flex: 1 1 auto;
-  min-height: 0;
   max-height: var(--pickup-max-height, 320px);
   overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
 }
 
-/* 詳細ページの注意書きは一番下に固定 */
-body.detailPage .footerNote{
-  flex: 0 0 auto;
-}
-
-/* インデックスページ全体レイアウト */
 body.indexPage{
   display: flex;
   flex-direction: column;
@@ -624,141 +618,92 @@ body.indexPage{
   overflow: hidden;
 }
 
-/* インデックスのカード（一覧カード）で残り高さをすべて使用 */
 body.indexPage .card.container{
   flex: 1 1 auto;
-  min-height: 0;
   display: flex;
   flex-direction: column;
-  margin-top: 0;
-  margin-bottom: 0;
+  margin: 0 auto;
 }
 
-/* ヘッダー行 */
 body.indexPage .card.container .columns{
   flex: 0 0 auto;
 }
 
-/* リストのみスクロール対象 */
 body.indexPage .card.container .list{
   flex: 1 1 auto;
-  min-height: 0;
   overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
 }
 
-/* インデックスページでも注意書きを下に固定 */
-body.indexPage .footerNote{
-  flex: 0 0 auto;
-}
-
-/* インデックス：最終行が伸びる問題への対策 */
 body.indexPage .card .list{
-  min-height: 0 !important;
-  max-height: none !important;
   flex: 1 1 auto;
 }
 
 body.indexPage .card .row:last-child{
-  margin-bottom: 0 !important;
   padding-bottom: 8px;
 }
 
-/* ========================================
-   8. レスポンシブ調整（ブレイクポイント別）
-   ======================================== */
+/* =========================================================
+   8. レスポンシブ
+   ========================================================= */
 
-/* メタ情報行の下マージン微調整（スマホ） */
 @media (max-width:700px){
   .meta{
     margin-bottom: 2px;
   }
 }
 
-/* インデックスヘッダー・行のグリッド化（タブレット以下） */
 @media (max-width:900px){
   .columns{
     display: grid;
-    grid-template-columns: 1.2fr 0.8fr 76px;
-    grid-template-areas: "name label year";
+    grid-template-columns: 1.4fr 0.8fr 76px;
     gap: 4px 8px;
     padding: 10px 10px;
   }
 
   .columns .label{
-    padding-left: 23px;
+    padding-left: 35px;
   }
 
   .row{
     display: grid;
-    grid-template-columns: 1.2fr 0.8fr 76px;
-    grid-template-areas: "name label year";
+    grid-template-columns: 1.4fr 0.8fr 76px;
     gap: 4px 8px;
-    padding: 10px 8px;
+    padding: 6px 8px;
+  }
+
+  .row > .name,
+  .row > .label{
+    min-width: 0;
   }
 
   .row > .name{
-    grid-area: name;
-    min-width: 0;
+    margin-left: -10px;
     overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
   }
 
   .row > .label{
-    grid-area: label;
-    min-width: 0;
+    padding-left: 10px;
     overflow: visible;
-    text-overflow: clip;
-    white-space: nowrap;
-    padding-left: 8px;
-  }
-
-  .row > .year{
-    grid-area: year;
-  }
-
-  /* インデックスリストの高さ解放（モバイル） */
-  body.indexPage .list{
-    max-height: none;
-    min-height: 0;
-  }
-
-  /* 詳細ページの曲行もインデックスと同程度の余白に拡張 */
-  .songRow{
-    padding: 10px 0;
   }
 }
 
-/* PICKUP 行を 1 行固定＋横スクロール（スマホ） */
 @media (max-width:768px){
   .songRow{
-    overflow-x: auto !important;
-    -webkit-overflow-scrolling: touch;
+    overflow-x: auto;
   }
 
-  .songRow .songLink{
-    display: inline-block !important;
-    white-space: nowrap !important;
+  .songLink{
+    white-space: nowrap;
     min-width: 100%;
-  }
-
-  .songRow .songLink .artist,
-  .songRow .songLink .title,
-  .songRow .songLink .sep,
-  .songRow .songLink .dot{
-    white-space: nowrap !important;
   }
 }
 
-/* フッター注意書きの文字サイズ（小さい画面） */
 @media (max-width:600px){
   .footerNote{
     font-size: 8px;
   }
 }
 
-/* PC 専用：スティッキーヘッダーとフォントサイズ調整 */
 @media (min-width:901px){
   .sticky-head{
     position: sticky;
@@ -768,7 +713,7 @@ body.indexPage .card .row:last-child{
   }
 
   :root{
-    --fs: 16px;
+    --fs: 16px;   /* PC base font */
   }
 
   .metaVal{
@@ -776,14 +721,20 @@ body.indexPage .card .row:last-child{
   }
 }
 
-/* ========================================
-   9. リセットボタン（検索条件クリア）
-   ======================================== */
+/* モバイル専用フォントサイズ（700px以下） */
+@media (max-width:700px){
+  :root{
+    --fs: 12px;
+  }
+}
+
+/* =========================================================
+   9. リセットボタン
+   ========================================================= */
 
 .resetBtn{
   height: var(--ctl-h);
   width: 40px;
-  flex: 0 0 auto;
   background: var(--chip-bg);
   border: 1px solid var(--border);
   border-radius: 10px;
@@ -793,8 +744,6 @@ body.indexPage .card .row:last-child{
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  padding: 0;
-  line-height: 1;
 }
 
 .resetBtn:focus{
@@ -809,11 +758,16 @@ body.indexPage .card .row:last-child{
   }
 }
 
-/* タップ中 / 押下時の見た目 */
 .resetBtn:active,
 .resetBtn.pressed{
-  background: #211f35;          /* ほんの少し明るめに */
-  border-color: var(--accent);  /* 枠を強調 */
-  color: var(--accent);         /* 矢印も強調 */
-  transform: scale(0.96);       /* ちょっとだけ縮む */
+  background: #211f35;
+  border-color: var(--accent);
+  color: var(--accent);
+  transform: scale(0.96);
+}
+
+.footerLogoWrap{
+  text-align: center;
+  margin-top: 10px;
+  margin-bottom: 25px;
 }

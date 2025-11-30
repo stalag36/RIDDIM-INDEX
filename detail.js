@@ -1,45 +1,103 @@
 (function () {
-  /* ========================================
+  /* ============================================================
      1. URL パラメータ / 共通ヘルパー
-     ======================================== */
+     ============================================================ */
 
+  // クエリパラメータ取得
   function getParam(key) {
     return new URLSearchParams(location.search).get(key) || "";
   }
 
+  // riddim名 → ファイル名用キー（index側と揃える）
   function normalizeFilenameKey(raw) {
     if (!raw) return "";
 
     let s = raw.trim();
-    s = s.replace(/\s+riddim\s*$/i, "");
-    s = s.replace(/\([^)]*\)/g, "");
-    s = s.replace(/\./g, "_");
-    s = s.replace(/\s+/g, "_");
+    s = s.replace(/\s+riddim\s*$/i, "");   // 末尾の "riddim" を削除
+    s = s.replace(/\([^)]*\)/g, "");      // () 内を削除
+    s = s.replace(/\./g, "_");            // . → _
+    s = s.replace(/\s+/g, "_");           // 空白 → _
     s = s.toLowerCase();
-    s = s.replace(/[^a-z0-9_]/g, "");
+    s = s.replace(/[^a-z0-9_]/g, "");     // 許可文字だけ
     return s;
   }
 
+  // 空なら "—" を入れてくれるテキストセット
   function setText(id, value) {
     const el = document.getElementById(id);
     if (!el) return;
+
     if (value === undefined || value === null) {
       el.textContent = "—";
       return;
     }
     const s = String(value).trim();
-    el.textContent = s ? s : "—";
+    el.textContent = s || "—";
   }
 
+  // タイトルやアーティストから () を取ったりして整形
   const cleanTitle = (s) =>
     s ? s.replace(/\([^)]*\)/g, "").replace(/\s+/g, " ").trim() : s;
+
   const cleanArtist = cleanTitle;
+
+  // レーベル名の "(2)" などを除去
   const cleanLabel = (s) =>
     s ? s.replace(/\(\d+\)/g, "").trim() : s;
 
-  /* ========================================
-     2. スマホ用タッチホバー
-     ======================================== */
+
+
+  /* ============================================================
+     2. お気に入り共通ヘルパー
+     ============================================================ */
+
+  const FAVORITES_KEY = "riddimFavorites";
+
+  function loadFavorites() {
+    try {
+      const raw = localStorage.getItem(FAVORITES_KEY);
+      if (!raw) return [];
+      const arr = JSON.parse(raw);
+      return Array.isArray(arr) ? arr : [];
+    } catch {
+      return [];
+    }
+  }
+
+  function saveFavorites(arr) {
+    try {
+      localStorage.setItem(FAVORITES_KEY, JSON.stringify(arr));
+    } catch {
+      // ignore
+    }
+  }
+
+  function isFavorite(key) {
+    if (!key) return false;
+    const favs = loadFavorites();
+    return favs.includes(key);
+  }
+
+  function toggleFavorite(key) {
+    if (!key) return;
+    const favs = loadFavorites();
+    const i = favs.indexOf(key);
+    if (i === -1) favs.push(key);
+    else favs.splice(i, 1);
+    saveFavorites(favs);
+  }
+
+  function setFavVisual(btn, key) {
+    const on = isFavorite(key);
+    btn.textContent = on ? "★" : "☆";
+    btn.classList.toggle("is-on", on);
+  }
+
+
+
+  /* ============================================================
+     3. スマホ用タッチホバー（PICKUP 行）
+     ============================================================ */
 
   function setupTouchHoverForSongs() {
     const rows = document.querySelectorAll(".songRow");
@@ -64,6 +122,7 @@
       );
     });
 
+    // 画面の別の場所をタッチしたらホバー解除
     document.addEventListener(
       "touchstart",
       (e) => {
@@ -77,15 +136,24 @@
     );
   }
 
-  /* ========================================
-     3. メイン処理
-     ======================================== */
+
+
+  /* ============================================================
+     4. メイン処理
+     ============================================================ */
 
   async function load() {
     try {
+      /* ------------------------------
+         4-1. riddim パラメータとキー
+         ------------------------------ */
       const rawRiddim = getParam("riddim");
       if (!rawRiddim) return;
 
+      // お気に入り用キー（インデックス同様、生のクエリ文字列）
+      const favKey = rawRiddim;
+
+      // JSON ファイル名用キー
       const key = normalizeFilenameKey(rawRiddim);
       if (!key) return;
 
@@ -98,15 +166,19 @@
 
       let rec = null;
 
-      /* 3-A. sessionStorage から即取得 */
+      /* ------------------------------
+         4-2. sessionStorage キャッシュ
+         ------------------------------ */
       const cached = sessionStorage.getItem(cacheKey);
       if (cached) {
         try {
           rec = JSON.parse(cached);
-        } catch {}
+        } catch {
+          // ignore
+        }
       }
 
-      /* 3-B. キャッシュが無い場合のみ fetch */
+      // キャッシュなし → fetch
       if (!rec) {
         for (const url of candidates) {
           try {
@@ -115,25 +187,47 @@
             rec = await res.json();
             sessionStorage.setItem(cacheKey, JSON.stringify(rec));
             break;
-          } catch {}
+          } catch {
+            // ignore
+          }
         }
       }
 
       if (!rec) return;
 
-      const tracks = Array.isArray(rec.tracks) ? rec.tracks : [];
+      const tracks   = Array.isArray(rec.tracks) ? rec.tracks : [];
       const firstTrack = tracks[0] || null;
-      const akaArr = Array.isArray(rec.aka) ? rec.aka : [];
+      const akaArr   = Array.isArray(rec.aka) ? rec.aka : [];
 
       const displayName =
         (rec.riddim && String(rec.riddim).trim()) ||
-        (rec.name && String(rec.name).trim()) ||
+        (rec.name   && String(rec.name).trim()) ||
         rawRiddim;
+
+
+
+      /* ------------------------------
+         4-3. タイトル / お気に入りボタン
+         ------------------------------ */
 
       document.title = "RIDDIM INDEX – " + displayName;
       setText("riddimTitle", displayName);
 
-      /* 3-2. メタ情報 */
+      const favBtn = document.getElementById("favDetailToggle");
+      if (favBtn) {
+        setFavVisual(favBtn, favKey);
+        favBtn.addEventListener("click", () => {
+          toggleFavorite(favKey);
+          setFavVisual(favBtn, favKey);
+        });
+      }
+
+
+
+      /* ------------------------------
+         4-4. メタ情報表示
+         ------------------------------ */
+
       const baseLabel =
         rec.label ||
         (firstTrack && firstTrack.label) ||
@@ -159,7 +253,11 @@
 
       setText("aka", akaArr.length ? akaArr.filter(Boolean).join(" ／ ") : "—");
 
-      /* 3-3. PICKUP 展開 */
+
+
+      /* ------------------------------
+         4-5. PICKUP 展開
+         ------------------------------ */
 
       const ul = document.getElementById("pickup");
       if (!ul) return;
@@ -167,8 +265,11 @@
 
       let picks = [];
 
+      // pickup が定義されている場合
       if (Array.isArray(rec.pickup) && rec.pickup.length) {
         const pickupArr = rec.pickup;
+
+        // { row_index, tier, role } 形式 → tracks から引き直す
         if (!("artist" in pickupArr[0]) && tracks.length) {
           const map = new Map(tracks.map((t) => [t.row_index, t]));
           pickupArr.forEach((p) => {
@@ -177,10 +278,12 @@
             picks.push({ ...base, tier: p.tier, role: p.role });
           });
         } else {
+          // すでに artist / title を持っている形式
           picks = pickupArr.slice();
         }
       }
 
+      // original があればピックアップに追加（重複回避）
       if (rec.original?.artist && rec.original?.title) {
         const orig = rec.original;
         const origKey = `${orig.artist}___${orig.title}`.toLowerCase();
@@ -189,6 +292,7 @@
         }
       }
 
+      // 年順ソート（数値あり優先）
       picks.sort((a, b) => {
         const ay = Number(a.year);
         const by = Number(b.year);
@@ -200,10 +304,11 @@
         return 0;
       });
 
+      // li を組み立て
       picks.forEach((p) => {
         let artist = cleanArtist(p.artist || "—");
-        let title = cleanTitle(p.title || "—");
-        let year = p.year ? String(p.year).trim() : "";
+        let title  = cleanTitle(p.title  || "—");
+        let year   = p.year ? String(p.year).trim() : "";
 
         const li = document.createElement("li");
         li.className = "songRow";
@@ -213,17 +318,17 @@
         const hasValid = (artist && artist !== "—") || (title && title !== "—");
 
         const yearHTML = year
-         ? `<span class="songYear" aria-hidden="true"
-            style="
-             user-select: none;
-             -webkit-user-select: none;
-             -moz-user-select: none;
-             -ms-user-select: none;
-             margin-left: 4px;
-             opacity: 0.85;
-            "
-           >(${year})</span>`
-         : "";
+          ? `<span class="songYear" aria-hidden="true"
+               style="
+                 user-select: none;
+                 -webkit-user-select: none;
+                 -moz-user-select: none;
+                 -ms-user-select: none;
+                 margin-left: 4px;
+                 opacity: 0.85;
+               "
+             >(${year})</span>`
+          : "";
 
         if (hasValid) {
           const queryStr = `${artist} ${title}`.trim();
@@ -256,14 +361,20 @@
         ul.appendChild(li);
       });
 
+      // スマホ用タッチホバーを有効化
       setupTouchHoverForSongs();
 
-      /* 3-4. YouTube ボタン */
+
+
+      /* ------------------------------
+         4-6. YouTube ボタン（riddim検索）
+         ------------------------------ */
 
       const ytBtn = document.getElementById("ytRiddimBtn");
       if (ytBtn) {
         ytBtn.onclick = () => {
-          const name = document.getElementById("riddimTitle")?.textContent?.trim() || "";
+          const name =
+            document.getElementById("riddimTitle")?.textContent?.trim() || "";
           if (!name) return;
           window.open(
             "https://www.youtube.com/results?search_query=" +
@@ -274,7 +385,11 @@
         };
       }
 
-      /* 3-5. PICKUP 高さ調整 */
+
+
+      /* ------------------------------
+         4-7. PICKUP カード高さ調整
+         ------------------------------ */
 
       function adjustPickupHeight() {
         try {
@@ -282,13 +397,13 @@
           if (!document.body.classList.contains("detailPage")) return;
 
           const masthead = document.querySelector(".masthead");
-          const footer = document.querySelector(".footerNote");
-          const cards = document.querySelectorAll(".detailPage .card.container");
+          const footer   = document.querySelector(".footerNote");
+          const cards    = document.querySelectorAll(".detailPage .card.container");
           if (!masthead || !footer || cards.length < 2) return;
 
-          const riddimCard = cards[0];
-          const pickupCard = cards[1];
-          const pickupHead = pickupCard.querySelector(".cardHead");
+          const riddimCard  = cards[0];
+          const pickupCard  = cards[1];
+          const pickupHead  = pickupCard.querySelector(".cardHead");
 
           const usedTop =
             masthead.offsetTop +
@@ -299,36 +414,46 @@
           const usedBottom = footer.offsetHeight + 24;
           const max = Math.max(80, vh - usedTop - usedBottom);
 
-          document.documentElement.style.setProperty("--pickup-max-height", max + "px");
-        } catch (e) {}
+          document.documentElement.style.setProperty(
+            "--pickup-max-height",
+            max + "px"
+          );
+        } catch {
+          // ignore
+        }
       }
 
       requestAnimationFrame(adjustPickupHeight);
       window.addEventListener("resize", adjustPickupHeight);
 
-      /* ========================================
-         3-6. 動的 JSON-LD を挿入
-         ======================================== */
+
+
+      /* ------------------------------
+         4-8. 動的 JSON-LD を挿入
+         ------------------------------ */
+
       function injectJsonLd(rec, displayName, baseLabel, baseYear, producer, akaArr) {
         const ld = {
           "@context": "https://schema.org",
           "@type": "CreativeWork",
-          "name": displayName,
-          "alternateName": akaArr.length ? akaArr : undefined,
-          "description": "RIDDIM INDEX のリディム詳細データ。",
-          "datePublished": baseYear || undefined,
-          "recordLabel": baseLabel || undefined,
-          "producer": producer || undefined,
-          "url": location.href,
-          "isPartOf": {
+          name: displayName,
+          alternateName: akaArr.length ? akaArr : undefined,
+          description: "RIDDIM INDEX のリディム詳細データ。",
+          datePublished: baseYear || undefined,
+          recordLabel: cleanLabel(baseLabel) || undefined,
+          producer: producer || undefined,
+          url: location.href,
+          isPartOf: {
             "@type": "WebSite",
-            "name": "RIDDIM INDEX",
-            "url": "https://italisle.jp/"
-          }
+            name: "RIDDIM INDEX",
+            url: "https://italisle.jp/",
+          },
         };
 
-        // 古いJSON-LDを削除（更新対応）
-        document.querySelectorAll('script[data-dynamic-jsonld]').forEach(el => el.remove());
+        // 既存の動的 JSON-LD を削除
+        document
+          .querySelectorAll('script[data-dynamic-jsonld]')
+          .forEach((el) => el.remove());
 
         const script = document.createElement("script");
         script.type = "application/ld+json";
@@ -337,20 +462,19 @@
         document.head.appendChild(script);
       }
 
-      // ★ load() 内の最後で JSON-LD を生成
-      injectJsonLd(
-        rec,
-        displayName,
-        cleanLabel(baseLabel),
-        baseYear,
-        producer,
-        akaArr
-      );
+      injectJsonLd(rec, displayName, baseLabel, baseYear, producer, akaArr);
 
     } catch (e) {
       console.error(e);
     }
   }
 
+
+
+  /* ============================================================
+     5. 実行
+     ============================================================ */
+
   load();
+
 })();
