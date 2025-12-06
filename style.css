@@ -677,7 +677,6 @@ body.indexPage .card .row:last-child{
 /* =========================================================
    8. レスポンシブ
    ========================================================= */
-
 @media (max-width:700px){
   .meta{
     margin-bottom: 2px;
@@ -709,7 +708,7 @@ body.indexPage .card .row:last-child{
   }
 
   .row > .name{
-    margin-left: -10px;
+    margin-left: -5px;
     overflow: hidden;
   }
 
