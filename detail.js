@@ -48,8 +48,8 @@
 
 
   /* ============================================================
-     2. お気に入り共通ヘルパー
-     ============================================================ */
+   2. お気に入り共通ヘルパー + トースト
+   ============================================================ */
 
   const FAVORITES_KEY = "riddimFavorites";
 
@@ -67,15 +67,12 @@
   function saveFavorites(arr) {
     try {
       localStorage.setItem(FAVORITES_KEY, JSON.stringify(arr));
-    } catch {
-      // ignore
-    }
+    } catch {}
   }
 
   function isFavorite(key) {
     if (!key) return false;
-    const favs = loadFavorites();
-    return favs.includes(key);
+    return loadFavorites().includes(key);
   }
 
   function toggleFavorite(key) {
@@ -87,12 +84,53 @@
     saveFavorites(favs);
   }
 
+  // ★ ビジュアル（初期状態）
   function setFavVisual(btn, key) {
     const on = isFavorite(key);
     btn.textContent = on ? "★" : "☆";
     btn.classList.toggle("is-on", on);
   }
 
+
+  // ----------------------------------------------------
+  // ★★★ iOS モーダル風トースト（中央に表示） ★★★
+  // ----------------------------------------------------
+  let toastEl = null;
+  let toastTimer = null;
+
+  function showToast(message) {
+    if (!toastEl) return;
+
+    toastEl.textContent = message;
+
+    // 連打対応：アニメをリスタート
+    toastEl.classList.remove("show");
+    void toastEl.offsetWidth; // reflow
+    toastEl.classList.add("show");
+
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => {
+      toastEl.classList.remove("show");
+    }, 2000);
+  }
+
+  // スマホ用の軽い振動（対応端末のみ）
+  function hapticLight() {
+    if (navigator.vibrate) {
+      navigator.vibrate(20); // ぷるっ
+    }
+  }
+
+  // トースト自体をタップで閉じる
+  document.addEventListener("DOMContentLoaded", () => {
+    toastEl = document.getElementById("toast");
+    if (toastEl) {
+      toastEl.addEventListener("click", () => {
+        toastEl.classList.remove("show");
+        if (toastTimer) clearTimeout(toastTimer);
+      });
+    }
+  });
 
 
   /* ============================================================
@@ -150,6 +188,9 @@
       const rawRiddim = getParam("riddim");
       if (!rawRiddim) return;
 
+      // トースト要素（detailページ用）
+      toastEl = document.getElementById("toast") || null;
+
       // お気に入り用キー（インデックス同様、生のクエリ文字列）
       const favKey = rawRiddim;
 
@@ -195,9 +236,9 @@
 
       if (!rec) return;
 
-      const tracks   = Array.isArray(rec.tracks) ? rec.tracks : [];
+      const tracks     = Array.isArray(rec.tracks) ? rec.tracks : [];
       const firstTrack = tracks[0] || null;
-      const akaArr   = Array.isArray(rec.aka) ? rec.aka : [];
+      const akaArr     = Array.isArray(rec.aka) ? rec.aka : [];
 
       const displayName =
         (rec.riddim && String(rec.riddim).trim()) ||
@@ -215,10 +256,36 @@
 
       const favBtn = document.getElementById("favDetailToggle");
       if (favBtn) {
+        // 初期状態
         setFavVisual(favBtn, favKey);
+
+        // クリック時：ON → CSS側 .is-on でポップ＋フレア
+        //              OFF → .is-unfav を一瞬付与してポフっと消える
         favBtn.addEventListener("click", () => {
-          toggleFavorite(favKey);
+          const wasFav = isFavorite(favKey);
+
+          toggleFavorite(favKey);      // 状態を反転
           setFavVisual(favBtn, favKey);
+
+          const nowFav = isFavorite(favKey);
+
+          if (!wasFav && nowFav) {
+            // ☆ → ★
+            showToast("お気に入りに追加しました");
+            hapticLight(); // ← 追加時だけ軽く振動
+          } else if (wasFav && !nowFav) {
+            // ★ → ☆ に変わったときだけ「ポフっ…」アニメ
+            favBtn.classList.remove("is-unfav");
+            // 再レイアウトでアニメをリスタート
+            void favBtn.offsetWidth;
+            favBtn.classList.add("is-unfav");
+
+            setTimeout(() => {
+              favBtn.classList.remove("is-unfav");
+            }, 260); // CSS の duration に合わせる
+
+            showToast("お気に入りを解除しました");
+          }
         });
       }
 
@@ -472,9 +539,13 @@
 
 
   /* ============================================================
-     5. 実行
-     ============================================================ */
+   5. 実行（DOM 完了後に load を呼ぶ）
+   ============================================================ */
 
-  load();
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", load);
+  } else {
+    load();
+  }
 
 })();

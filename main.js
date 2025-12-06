@@ -46,7 +46,7 @@
        3. DOM取得・状態変数
        ============================================================ */
 
-    const listEl = document.getElementById("list");
+    const listEl       = document.getElementById("list");
     if (!listEl) return;
 
     const metaEl       = document.getElementById("meta");
@@ -58,17 +58,18 @@
     const hYear        = document.getElementById("hYear");
     const favFilterBtn = document.getElementById("filterFavorites");
     const resetBtn     = document.getElementById("resetFilters");
+    const toastEl      = document.getElementById("toast");
 
-    let items = [];
+    let items  = [];
     let visible = [];
 
-    let q = "";
-    let qRe = null;
-    let filterLabel = "All";
-    let filterDecade = "All";
-    let sortKey = "riddim";
-    let sortDir = "asc";
-    let filterFavoritesOnly = false;
+    let q                    = "";
+    let qRe                  = null;
+    let filterLabel          = "All";
+    let filterDecade         = "All";
+    let sortKey              = "riddim";
+    let sortDir              = "asc";
+    let filterFavoritesOnly  = false;
 
 
     /* ============================================================
@@ -108,6 +109,48 @@
       if (i === -1) favs.push(key);
       else favs.splice(i, 1);
       saveFavorites(favs);
+    }
+
+
+    /* ============================================================
+       4.5 トースト通知（お気に入りメッセージ）+ ハプティック
+       ============================================================ */
+
+    let toastTimer = null;
+
+    function showToast(message) {
+      if (!toastEl) return; // #toast が無い場合は何もしない
+
+      toastEl.textContent = message;
+
+      // 連打してもアニメーションをリスタートさせる
+      toastEl.classList.remove("show");
+      void toastEl.offsetWidth; // reflow
+      toastEl.classList.add("show");
+
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        toastEl.classList.remove("show");
+      }, 2000); // 2秒でフェードアウト
+    }
+
+    // スマホ用の軽い振動（対応端末のみ）
+    function hapticLight() {
+      if (navigator.vibrate) {
+        // ぷるっと短く 20ms
+        navigator.vibrate(20);
+      }
+    }
+
+    // トースト自体をタップ／クリックしたら即閉じる
+    if (toastEl) {
+      toastEl.addEventListener("click", () => {
+        toastEl.classList.remove("show");
+        if (toastTimer) {
+          clearTimeout(toastTimer);
+          toastTimer = null;
+        }
+      });
     }
 
 
@@ -250,11 +293,11 @@
 
       const decOps = [
         "All",
-        ...Array.from(new Set(items.map((it) => toDecade(it.year))))
-          .filter((v) => v !== 0)
-          .sort((a, b) => a - b)
-          .map(String),
-      ];
+        ...Array.from(new Set(items.map((it) => toDecade(it.year)))),
+      ]
+        .filter((v) => v !== 0)
+        .sort((a, b) => a - b)
+        .map(String);
 
       if (labelSelect) {
         labelSelect.innerHTML =
@@ -384,7 +427,7 @@
       if (sortKey === "label") activate(hLabel);
       if (sortKey === "year") activate(hYear);
 
-      // ★ ここで「ソート：Riddim（昇順）」を meta に表示
+      // メタ情報（件数＋ソート状態）
       if (metaEl) {
         metaEl.textContent =
           `表示中 ${visible.length} / ${items.length} ‐ ソート：` +
@@ -507,10 +550,12 @@
        12. レンダリング（バーチャルリスト）
        ============================================================ */
 
+    // ビジュアル反映（初期状態用：アニメは付けない）
     function setFavVisual(btn, key) {
       const on = isFavorite(key);
       btn.textContent = on ? "★" : "☆";
       btn.classList.toggle("is-on", on);
+      // ここでは .is-unfav は触らない（クリック時だけ付ける）
     }
 
     function render() {
@@ -528,7 +573,7 @@
       inner.innerHTML = "";
 
       for (let i = start; i < end; i++) {
-        const it = visible[i];
+        const it  = visible[i];
         const key = it.riddim;
 
         const row = document.createElement("div");
@@ -552,11 +597,36 @@
         favBtn.className = "favToggle";
         setFavVisual(favBtn, key);
 
+        // クリック時：ON → ポップ＋フレア（CSSの .is-on アニメ）、
+        //             OFF → .is-unfav を一瞬付けてポフっと消える
         favBtn.addEventListener("click", (e) => {
           e.stopPropagation();
           e.preventDefault();
-          toggleFavorite(key);
-          setFavVisual(favBtn, key);
+
+          const wasFav = isFavorite(key);
+
+          toggleFavorite(key);       // 状態を反転
+          setFavVisual(favBtn, key); // テキスト・is-on を現在値に合わせる
+
+          const nowFav = isFavorite(key);
+
+          if (!wasFav && nowFav) {
+            // ☆ → ★ になったとき
+            showToast("お気に入りに追加しました");
+            hapticLight(); // ← ここで軽く振動
+          } else if (wasFav && !nowFav) {
+            // ★ → ☆ に変わったときだけ「ポフっ…」アニメ
+            favBtn.classList.remove("is-unfav");
+            void favBtn.offsetWidth;  // reflow
+            favBtn.classList.add("is-unfav");
+
+            setTimeout(() => {
+              favBtn.classList.remove("is-unfav");
+            }, 260); // CSS の duration に合わせる
+
+            showToast("お気に入りを解除しました");
+          }
+
           if (filterFavoritesOnly) applyFiltersAndSort();
         });
 

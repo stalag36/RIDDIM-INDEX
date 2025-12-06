@@ -402,14 +402,51 @@ body{
   justify-content: center;
   position: relative;
   top: 1px;
+  /* 基本状態 */
+  transform: scale(1);
+  opacity: 1;
+  transition:
+    color 0.2s ease-out,
+    text-shadow 0.18s ease-out;
 }
 
+/* 光のフレア用 */
+.favToggle::after{
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(255, 216, 100, 0.55) 0%,
+    rgba(255, 216, 100, 0) 70%
+  );
+  opacity: 0;
+  transform: scale(0.4);
+  pointer-events: none;
+}
+
+/* ★ ON（ポップ＋光る） */
 .favToggle.is-on{
   color: var(--star-on);
+  text-shadow: 0 0 10px rgba(255, 216, 100, 0.55);
+  animation: fav-pop 0.38s cubic-bezier(0.25, 1.55, 0.35, 1);
 }
 
+.favToggle.is-on::after{
+  animation: fav-flare 0.35s ease-out;
+}
+
+/* ☆ OFF のときの“ポフっ”（JS側で一瞬 .is-unfav を付与する想定） */
+.favToggle.is-unfav{
+  animation: fav-unfav 0.25s ease-out;
+}
+
+/* hover 時はほんのり光らせるだけにして、transform はアニメと衝突させない */
 @media (hover:hover){
-  .favToggle:hover{ transform: translateY(-1px); }
+  .favToggle:hover{
+    text-shadow: 0 0 6px rgba(255, 216, 100, 0.4);
+  }
 }
 
 .nameText{
@@ -440,6 +477,25 @@ body{
 
 .row.row--click.touch-hover::before{
   opacity: 1;
+}
+
+/* ★ アニメーション定義 */
+@keyframes fav-pop {
+  0%   { transform: scale(0.60); opacity: 0.8; }
+  45%  { transform: scale(1.32); opacity: 1; }
+  65%  { transform: scale(0.88); }
+  82%  { transform: scale(1.10); }
+  100% { transform: scale(1.00); }
+}
+
+@keyframes fav-flare{
+  0%   { transform: scale(0.4); opacity: 0.9; }
+  100% { transform: scale(1.8); opacity: 0; }
+}
+
+@keyframes fav-unfav{
+  0%   { transform: scale(1);   opacity: 1; }
+  100% { transform: scale(0.6); opacity: 0; }
 }
 
 /* =========================================================
@@ -770,4 +826,50 @@ body.indexPage .card .row:last-child{
   text-align: center;
   margin-top: 10px;
   margin-bottom: 25px;
+}
+
+/* =========================================================
+   10. トースト通知（お気に入りメッセージ / iOS モーダル風）
+   ========================================================= */
+
+.toast{
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.9);
+
+  /* カード本体（iOS っぽい明るめのモーダル） */
+  padding: 14px 20px;
+  border-radius: 18px;
+  background: #f9fafb;
+  color: #111827;
+  font-size: 14px;
+  line-height: 1.5;
+  text-align: center;
+  letter-spacing: 0.02em;
+
+  /* ↓★★ ここを追加（改行させない）★★↓ */
+  white-space: nowrap;
+  word-break: keep-all;
+  /* ↑★★ ここを追加（改行させない）★★↑ */
+
+  /* 影を強めにしてモーダル感を出す */
+  box-shadow:
+    0 18px 45px rgba(0, 0, 0, 0.55),
+    0 0 0 1px rgba(148, 163, 184, 0.35);
+
+  max-width: min(280px, 80vw);
+
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 0.22s ease-out,
+    transform 0.22s ease-out;
+  z-index: 9999;
+}
+
+/* 表示中（フェードイン＋少しスケールアップ） */
+.toast.show{
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1.0);
 }
