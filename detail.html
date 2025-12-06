@@ -4,23 +4,28 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
 
-  <meta name="description" content="RIDDIM INDEX のリディム詳細ページ。レゲエのリディム情報をAIで整理し、別名・レーベル・リリース年・プロデューサーなどの詳細を閲覧できます。" />
+  <meta name="description" content="RIDDIM INDEX のリディム詳細ページ。レゲエのリディム情報をAIで整理し詳細を閲覧できます。" />
   <meta name="robots" content="noindex,follow" />
 
   <title>リディム詳細 | RIDDIM INDEX – レゲエ・リディム データベース</title>
 
-  <link rel="icon" href="ITALISLE.svg" type="image/svg+xml" />
+  <!-- ▼▼ ファビコン（PNG + SVG） ▼▼ -->
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="icon" type="image/png" href="favicon.png" />
+
   <link rel="stylesheet" href="style.css" />
 
+  <!-- OGP -->
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="RIDDIM INDEX" />
   <meta property="og:title" content="リディム詳細 | RIDDIM INDEX – レゲエ・リディム データベース" />
-  <meta property="og:description" content="RIDDIM INDEX のリディム詳細ページ。レゲエのリディム情報をAIで整理し、別名・レーベル・リリース年・プロデューサーなどの詳細を閲覧できます。" />
+  <meta property="og:description" content="RIDDIM INDEX のリディム詳細ページ。レゲエのリディム情報をAIで整理し詳細を閲覧できます。" />
   <meta property="og:url" content="https://italisle.jp/detail.html" />
 
+  <!-- Twitter -->
   <meta name="twitter:card" content="summary" />
   <meta name="twitter:title" content="リディム詳細 | RIDDIM INDEX – レゲエ・リディム データベース" />
-  <meta name="twitter:description" content="RIDDIM INDEX のリディム詳細ページ。レゲエのリディム情報をAIで整理し、別名・レーベル・リリース年・プロデューサーなどの詳細を閲覧できます。" />
+  <meta name="twitter:description" content="RIDDIM INDEX のリディム詳細ページ。レゲエのリディム情報をAIで整理し詳細を閲覧できます。" />
 </head>
 
 <body class="detailPage">
@@ -38,15 +43,15 @@
     <div class="cardHead">
       <div class="cardHead__row">
 
-        <!-- ★★ お気に入りトグルを追加 ★★ -->
+        <!-- お気に入りトグル -->
         <button id="favDetailToggle" class="favToggle" type="button" aria-label="お気に入り">
           ☆
         </button>
 
-        <!-- ▼ リディム名 -->
+        <!-- リディム名 -->
         <h2 id="riddimTitle" class="cardHead__title"></h2>
 
-        <!-- ▼ YouTube ボタン -->
+        <!-- YouTube検索ボタン -->
         <button
           id="ytRiddimBtn"
           class="ytBtn"
@@ -59,6 +64,7 @@
     </div>
 
     <div class="metaGrid">
+
       <div class="metaRow">
         <div class="metaKey">別名：</div>
         <div class="metaVal" id="aka">—</div>
@@ -78,6 +84,7 @@
         <div class="metaKey">プロデューサー：</div>
         <div class="metaVal" id="producer">—</div>
       </div>
+
     </div>
   </section>
 

@@ -14,8 +14,9 @@
   <!-- ★ タイトル最適化 -->
   <title>RIDDIM INDEX – レゲエ・リディム データベース</title>
 
-  <!-- ファビコン -->
-  <link rel="icon" href="ITALISLE.svg" type="image/svg+xml">
+  <!-- ファビコン（SVG と PNG を併用） -->
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="icon" type="image/png" href="favicon.png" />
 
   <!-- CSS -->
   <link rel="stylesheet" href="style.css" />
@@ -58,8 +59,14 @@
       <span class="ver">v1.1</span>
     </h1>
     <div class="titleline"></div>
-    <input id="q" class="input" type="search" autocomplete="off"
-      placeholder="Search（ Riddim ／ レーベル ／ リリース年 ）" aria-label="全体検索" />
+    <input
+      id="q"
+      class="input"
+      type="search"
+      autocomplete="off"
+      placeholder="Search（ Riddim ／ レーベル ／ リリース年 ）"
+      aria-label="全体検索"
+    />
   </header>
 
   <section class="filters container" id="filters">
@@ -70,7 +77,7 @@
       <option value="All">年代（ALL）</option>
     </select>
 
-    <!-- ★ お気に入りだけ表示トグルボタン（追加） -->
+    <!-- ★ お気に入りだけ表示トグルボタン -->
     <button
       id="filterFavorites"
       class="favFilterBtn"
@@ -81,7 +88,7 @@
       ★ Favorites
     </button>
 
-    <!-- ★ 追加：検索条件リセットボタン -->
+    <!-- ★ 検索条件リセットボタン -->
     <button
       id="resetFilters"
       class="resetBtn"
@@ -111,6 +118,5 @@
     ChatGPTによって作成しているため、情報は必ずしも正しいとは限りません。<br>
     重要な情報は確認するようにしてください。
   </footer>
-
 </body>
 </html>
