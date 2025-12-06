@@ -73,6 +73,9 @@
     let sortDir             = "asc";
     let filterFavoritesOnly = false;
 
+    // 初期描画かどうか（★アニメON/OFF制御用）
+    let isFirstRender = true;
+
 
     /* ============================================================
        3. お気に入り管理（localStorage）
@@ -94,7 +97,9 @@
     function saveFavorites(arr) {
       try {
         localStorage.setItem(FAVORITES_KEY, JSON.stringify(arr));
-      } catch {}
+      } catch {
+        /* ignore */
+      }
     }
 
     function isFavorite(key) {
@@ -269,11 +274,17 @@
             const rec = await res.json();
             try {
               sessionStorage.setItem(cacheKey, JSON.stringify(rec));
-            } catch {}
+            } catch {
+              /* ignore */
+            }
             break;
-          } catch {}
+          } catch {
+            /* ignore */
+          }
         }
-      } catch {}
+      } catch {
+        /* ignore */
+      }
     }
 
 
@@ -552,10 +563,13 @@
        12. レンダリング（バーチャルリスト）
        ============================================================ */
 
-    function setFavVisual(btn, key) {
+    function setFavVisual(btn, key, animate = true) {
       const on = isFavorite(key);
       btn.textContent = on ? "★" : "☆";
       btn.classList.toggle("is-on", on);
+
+      if (!animate) btn.classList.add("fav-no-anim");
+      else btn.classList.remove("fav-no-anim");
     }
 
     function render() {
@@ -594,7 +608,9 @@
         const favBtn = document.createElement("button");
         favBtn.type = "button";
         favBtn.className = "favToggle";
-        setFavVisual(favBtn, key);
+
+        // 初期描画のみアニメON、それ以外（スクロール/再描画）はアニメOFF
+        setFavVisual(favBtn, key, isFirstRender);
 
         favBtn.addEventListener("click", (e) => {
           e.stopPropagation();
@@ -605,7 +621,8 @@
           const wasFav = isFavorite(key);
 
           toggleFavorite(key);
-          setFavVisual(favBtn, key);
+          // クリック時は毎回アニメON
+          setFavVisual(favBtn, key, true);
 
           const nowFav = isFavorite(key);
 
@@ -668,6 +685,9 @@
 
         inner.appendChild(row);
       }
+
+      // 初回描画が終わったらフラグを折る
+      if (isFirstRender) isFirstRender = false;
     }
 
 
@@ -682,10 +702,10 @@
       })
       .then((data) => {
         items = data.map((it, idx) => ({
-          id: it.id ?? idx + 1,
+          id:     it.id     ?? idx + 1,
           riddim: it.riddim ?? it.name ?? "",
-          label: it.label ?? "",
-          year:  it.year  ?? "",
+          label:  it.label  ?? "",
+          year:   it.year   ?? "",
         }));
 
         buildOptions();
