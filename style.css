@@ -424,26 +424,34 @@ body{
   pointer-events: none;
 }
 
+/* お気に入りONの基本状態（アニメ指定なし） */
 .favToggle.is-on{
   color: var(--star-on);
   text-shadow: 0 0 10px rgba(255, 216, 100, 0.55);
-  animation: fav-pop 0.38s cubic-bezier(0.25, 1.55, 0.35, 1);
 }
 
-.favToggle.is-on::after{
+/* アイドルアニメを回すときに付けるクラス（5秒周期） */
+.favToggle.is-on.fav-idle-run{
+  animation:
+    fav-pop 0.38s cubic-bezier(0.25, 1.55, 0.35, 1),
+    fav-idle 5s ease-in-out 1.5s infinite;
+}
+
+.favToggle.is-on.fav-idle-run::after{
   animation: fav-flare 0.35s ease-out;
 }
 
+/* お気に入り解除アニメ */
 .favToggle.is-unfav{
   animation: fav-unfav 0.25s ease-out;
 }
 
-/* スクロール等の再描画では★アニメを無効化するためのクラス */
-.favToggle.fav-no-anim{
+/* スクロール中などでアニメ一時停止 */
+.favToggle.fav-idle-stop{
   animation: none !important;
 }
 
-.favToggle.fav-no-anim::after{
+.favToggle.fav-idle-stop::after{
   animation: none !important;
 }
 
@@ -894,5 +902,21 @@ body.indexPage .card .row:last-child{
   100%{
     transform: translate(-50%, -50%) scale(2.8);
     opacity: 0;
+  }
+}
+
+/* 5秒周期のアイドルアニメ */
+@keyframes fav-idle{
+  0%, 92%, 100%{
+    transform: scale(1);
+    text-shadow: 0 0 10px rgba(255, 216, 100, 0.55);
+  }
+  95%{
+    transform: scale(1.18);
+    text-shadow: 0 0 18px rgba(255, 216, 100, 0.9);
+  }
+  97%{
+    transform: scale(0.9);
+    text-shadow: 0 0 8px rgba(255, 216, 100, 0.4);
   }
 }

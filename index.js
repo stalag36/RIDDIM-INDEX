@@ -73,8 +73,11 @@
     let sortDir             = "asc";
     let filterFavoritesOnly = false;
 
-    // 初期描画かどうか（★アニメON/OFF制御用）
+    // 初期描画かどうか（★アニメON制御用）
     let isFirstRender = true;
+
+    // スクロール停止後にアイドルアニメを再開するためのタイマー
+    let favIdleTimer = null;
 
 
     /* ============================================================
@@ -358,10 +361,41 @@
 
     measureRowH();
 
+    // ★アイドルアニメを一括で止める
+    function pauseIdleAnimation() {
+      const stars = listEl.querySelectorAll(".favToggle.is-on");
+      stars.forEach((star) => {
+        star.classList.remove("fav-idle-run");
+        star.classList.add("fav-idle-stop");
+      });
+    }
+
+    // ★アイドルアニメを一括で再開する
+    function startIdleAnimation() {
+      const stars = listEl.querySelectorAll(".favToggle.is-on");
+      stars.forEach((star) => {
+        star.classList.remove("fav-idle-stop");
+        // アニメ再スタート用の強制リフロー
+        star.classList.remove("fav-idle-run");
+        void star.offsetWidth;
+        star.classList.add("fav-idle-run");
+      });
+    }
+
+    // スクロール：描画 + アニメ一時停止 + 停止後に再開
     listEl.addEventListener(
       "scroll",
       () => {
         render();
+
+        // スクロール中はアイドルアニメ停止
+        pauseIdleAnimation();
+
+        if (favIdleTimer) clearTimeout(favIdleTimer);
+        favIdleTimer = setTimeout(() => {
+          // スクロールが一定時間止まったら再開
+          startIdleAnimation();
+        }, 200); // 200ms 無操作で「スクロール終了」とみなす
       },
       { passive: true }
     );
@@ -393,6 +427,12 @@
       listEl.scrollTop = 0;
       render();
       updateSortUI();
+
+      // フィルタ変更後も少し待ってからアイドルアニメ再開
+      if (favIdleTimer) clearTimeout(favIdleTimer);
+      favIdleTimer = setTimeout(() => {
+        startIdleAnimation();
+      }, 200);
     }
 
     function updateSortUI() {
@@ -563,13 +603,26 @@
        12. レンダリング（バーチャルリスト）
        ============================================================ */
 
-    function setFavVisual(btn, key, animate = true) {
+    // ★の見た目 + アニメクラス付け
+    // allowAnim = true のときだけ idle アニメを回す（初期描画 & クリック）
+    function setFavVisual(btn, key, allowAnim = false) {
       const on = isFavorite(key);
       btn.textContent = on ? "★" : "☆";
       btn.classList.toggle("is-on", on);
 
-      if (!animate) btn.classList.add("fav-no-anim");
-      else btn.classList.remove("fav-no-anim");
+      // いったん関連クラスを全部外す
+      btn.classList.remove("fav-idle-run", "fav-idle-stop", "is-unfav");
+
+      if (!on) return;
+
+      if (allowAnim) {
+        // 初期描画 or クリック時：pop + idle
+        void btn.offsetWidth;
+        btn.classList.add("fav-idle-run");
+      } else {
+        // スクロール等で再描画されたときは「停止状態」から始める
+        btn.classList.add("fav-idle-stop");
+      }
     }
 
     function render() {
@@ -609,7 +662,7 @@
         favBtn.type = "button";
         favBtn.className = "favToggle";
 
-        // 初期描画のみアニメON、それ以外（スクロール/再描画）はアニメOFF
+        // 初期描画のみアニメON、それ以外（スクロール/再描画）は停止状態から
         setFavVisual(favBtn, key, isFirstRender);
 
         favBtn.addEventListener("click", (e) => {
@@ -621,7 +674,7 @@
           const wasFav = isFavorite(key);
 
           toggleFavorite(key);
-          // クリック時は毎回アニメON
+          // クリック時は毎回アニメON（pop + idle）
           setFavVisual(favBtn, key, true);
 
           const nowFav = isFavorite(key);
@@ -687,7 +740,9 @@
       }
 
       // 初回描画が終わったらフラグを折る
-      if (isFirstRender) isFirstRender = false;
+      if (isFirstRender) {
+        isFirstRender = false;
+      }
     }
 
 
@@ -711,6 +766,12 @@
         buildOptions();
         applyFiltersAndSort();
         fitListHeight();
+
+        // 初期描画後、少し遅らせて idle アニメをスタート
+        if (favIdleTimer) clearTimeout(favIdleTimer);
+        favIdleTimer = setTimeout(() => {
+          startIdleAnimation();
+        }, 300);
       })
       .catch((err) => {
         console.error(err);

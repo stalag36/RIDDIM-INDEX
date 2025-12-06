@@ -81,13 +81,28 @@
     saveFavorites(favs);
   }
 
-  function setFavVisual(btn, key) {
+  // allowAnim = true のときだけ idle アニメ (fav-idle-run) を回す
+  function setFavVisual(btn, key, allowAnim = false) {
     const on = isFavorite(key);
     btn.textContent = on ? "★" : "☆";
     btn.classList.toggle("is-on", on);
+
+    // 関連クラスはいったん全部外す
+    btn.classList.remove("fav-idle-run", "fav-idle-stop", "is-unfav");
+
+    if (!on) return;
+
+    if (allowAnim) {
+      // アニメを再スタートさせるために強制リフロー
+      void btn.offsetWidth;
+      btn.classList.add("fav-idle-run");
+    } else {
+      // 停止状態
+      btn.classList.add("fav-idle-stop");
+    }
   }
 
-  let toastEl   = null;
+  let toastEl    = null;
   let toastTimer = null;
 
   function showToast(message) {
@@ -236,7 +251,8 @@
 
       const favBtn = document.getElementById("favDetailToggle");
       if (favBtn) {
-        setFavVisual(favBtn, favKey);
+        // 初期表示時は idle アニメも有効にする
+        setFavVisual(favBtn, favKey, true);
 
         favBtn.addEventListener("click", () => {
           playRipple(favBtn);
@@ -244,7 +260,8 @@
           const wasFav = isFavorite(favKey);
 
           toggleFavorite(favKey);
-          setFavVisual(favBtn, favKey);
+          // クリック時は毎回アニメON（pop + idle）
+          setFavVisual(favBtn, favKey, true);
 
           const nowFav = isFavorite(favKey);
 
@@ -257,6 +274,7 @@
             showToast(`${titleForToast}\nお気に入りに追加しました`);
             hapticLight();
           } else if (wasFav && !nowFav) {
+            // 解除時の「しぼむ」アニメ
             favBtn.classList.remove("is-unfav");
             void favBtn.offsetWidth;
             favBtn.classList.add("is-unfav");
