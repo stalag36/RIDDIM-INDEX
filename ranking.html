@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="version" content="v1.2" />
+
+  <title>RIDDIM INDEX – お気に入りランキング</title>
+  <link rel="stylesheet" href="style.css" />
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    window.SUPABASE_URL = "https://vlijhkkqszwlejnywidy.supabase.co";
+    window.SUPABASE_ANON_KEY = "sb_publishable_w55iXdKQ2XpFxjZA6OD2UA_aYtaSvJU";
+  </script>
+</head>
+
+<body class="detailPage">
+  <header class="masthead container">
+    <div class="mastheadInner">
+      <h1 class="title">
+        <a href="index.html" class="titleLink">RIDDIM INDEX</a>
+        <span class="ver">v1.2</span>
+      </h1>
+
+      <!-- ▼ 右上メニューボタン（右スライド） -->
+      <div class="pageMenuWrap">
+        <button
+          id="pageMenuBtn"
+          class="pageMenuBtn"
+          type="button"
+          aria-haspopup="true"
+          aria-expanded="false"
+          aria-controls="pageMenu"
+          aria-label="メニュー"
+        >
+          <span class="hamburger" aria-hidden="true"></span>
+        </button>
+
+        <!-- ▼ 背景（クリックで閉じる） -->
+        <div id="menuBackdrop" class="menuBackdrop" hidden></div>
+
+        <!-- ▼ 右スライドメニュー本体 -->
+        <nav id="pageMenu" class="pageMenuDrawer" hidden aria-label="メニュー">
+          <div class="pageMenuHeader">
+            <span class="pageMenuTitle">メニュー</span>
+            <button id="menuCloseBtn" class="pageMenuClose" type="button" aria-label="メニューを閉じる">✕</button>
+          </div>
+
+          <ul class="pageMenu__list">
+            <li class="pageMenu__item">
+              <a href="index.html" class="pageMenu__link">インデックス</a>
+            </li>
+            <li class="pageMenu__item">
+              <a href="ranking.html" class="pageMenu__link" aria-current="page">ランキング</a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+
+    <div class="titleline"></div>
+  </header>
+
+  <section class="card container rankingCard">
+    <header class="rankingHead">
+      <h2 class="rankingTitle">お気に入りランキング</h2>
+      <p class="rankingSub">★ の数が多い順（0件は非表示）</p>
+    </header>
+
+    <div id="rankingMeta" class="rankingMeta">読み込み中...</div>
+
+    <!-- 棒グラフ本体 -->
+    <div id="rankingBars" class="rankingBars"></div>
+  </section>
+
+  <footer class="footerNote">
+    ChatGPTによって作成しているため、情報は必ずしも正しいとは限りません。<br />
+    重要な情報は確認するようにしてください。
+  </footer>
+
+  <!-- ▼ 右上メニュー開閉（右スライド対応） -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const btn = document.getElementById("pageMenuBtn");
+      const menu = document.getElementById("pageMenu");
+      const backdrop = document.getElementById("menuBackdrop");
+      const closeBtn = document.getElementById("menuCloseBtn");
+      if (!btn || !menu || !backdrop) return;
+
+      let isOpen = false;
+
+      const openMenu = () => {
+        if (isOpen) return;
+        isOpen = true;
+
+        menu.hidden = false;
+        backdrop.hidden = false;
+
+        requestAnimationFrame(() => {
+          document.body.classList.add("menu-open");
+          btn.classList.add("is-open");
+          btn.setAttribute("aria-expanded", "true");
+        });
+      };
+
+      const closeMenu = () => {
+        if (!isOpen) return;
+        isOpen = false;
+
+        document.body.classList.remove("menu-open");
+        btn.classList.remove("is-open");
+        btn.setAttribute("aria-expanded", "false");
+
+        const onEnd = () => {
+          if (isOpen) return;
+          menu.hidden = true;
+          backdrop.hidden = true;
+          menu.removeEventListener("transitionend", onEnd);
+        };
+        menu.addEventListener("transitionend", onEnd);
+      };
+
+      const toggleMenu = () => (isOpen ? closeMenu() : openMenu());
+
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        toggleMenu();
+      });
+
+      closeBtn?.addEventListener("click", closeMenu);
+      backdrop.addEventListener("click", closeMenu);
+
+      menu.querySelectorAll(".pageMenu__link").forEach((link) => {
+        link.addEventListener("click", closeMenu);
+      });
+
+      document.addEventListener("click", (e) => {
+        if (!isOpen) return;
+        if (menu.contains(e.target)) return;
+        if (btn.contains(e.target)) return;
+        closeMenu();
+      });
+
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") closeMenu();
+      });
+    });
+  </script>
+
+  <script src="ranking.js"></script>
+</body>
+</html>

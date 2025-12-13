@@ -2,7 +2,7 @@
 <html lang="ja" class="detailLock">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width,initial-scale=1, viewport-fit=cover" />
 
   <meta name="description" content="RIDDIM INDEX のリディム詳細ページ。レゲエのリディム情報をAIで整理し詳細を閲覧できます。" />
   <meta name="robots" content="noindex,follow" />
@@ -13,16 +13,53 @@
   <link rel="icon" type="image/png" href="favicon.png" />
 
   <link rel="stylesheet" href="style.css" />
-
 </head>
 
 <body class="detailPage">
 
-  <header class="masthead container detailPage">
-    <h1 class="title">
-      <a href="index.html" class="titleLink">RIDDIM INDEX</a>
-      <span class="ver">v1.2</span>
-    </h1>
+  <header class="masthead container">
+    <div class="mastheadInner">
+      <h1 class="title">
+        <a href="index.html" class="titleLink">RIDDIM INDEX</a>
+        <span class="ver">v1.2</span>
+      </h1>
+
+      <!-- ▼ 右上メニューボタン（indexと同仕様） -->
+      <div class="pageMenuWrap">
+        <button
+          id="pageMenuBtn"
+          class="pageMenuBtn"
+          type="button"
+          aria-haspopup="true"
+          aria-expanded="false"
+          aria-controls="pageMenu"
+          aria-label="メニュー"
+        >
+          <span class="hamburger" aria-hidden="true"></span>
+        </button>
+
+        <!-- ▼ 背景（クリックで閉じる） -->
+        <div id="menuBackdrop" class="menuBackdrop" hidden></div>
+
+        <!-- ▼ 右スライドメニュー本体 -->
+        <nav id="pageMenu" class="pageMenuDrawer" hidden aria-label="メニュー">
+          <div class="pageMenuHeader">
+            <span class="pageMenuTitle">メニュー</span>
+            <button id="menuCloseBtn" class="pageMenuClose" type="button" aria-label="メニューを閉じる">✕</button>
+          </div>
+
+          <ul class="pageMenu__list">
+            <li class="pageMenu__item">
+              <a href="index.html" class="pageMenu__link">インデックス</a>
+            </li>
+            <li class="pageMenu__item">
+              <a href="ranking.html" class="pageMenu__link">ランキング</a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+
     <div class="titleline"></div>
   </header>
 
@@ -99,6 +136,75 @@
   <script>
     window.SUPABASE_URL = "https://vlijhkkqszwlejnywidy.supabase.co";
     window.SUPABASE_ANON_KEY = "sb_publishable_w55iXdKQ2XpFxjZA6OD2UA_aYtaSvJU";
+  </script>
+
+  <!-- ▼ 右上メニュー開閉（indexと同じ） -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const btn = document.getElementById("pageMenuBtn");
+      const menu = document.getElementById("pageMenu");
+      const backdrop = document.getElementById("menuBackdrop");
+      const closeBtn = document.getElementById("menuCloseBtn");
+      if (!btn || !menu || !backdrop) return;
+
+      let isOpen = false;
+
+      const openMenu = () => {
+        if (isOpen) return;
+        isOpen = true;
+
+        menu.hidden = false;
+        backdrop.hidden = false;
+
+        requestAnimationFrame(() => {
+          document.body.classList.add("menu-open");
+          btn.classList.add("is-open");
+          btn.setAttribute("aria-expanded", "true");
+        });
+      };
+
+      const closeMenu = () => {
+        if (!isOpen) return;
+        isOpen = false;
+
+        document.body.classList.remove("menu-open");
+        btn.classList.remove("is-open");
+        btn.setAttribute("aria-expanded", "false");
+
+        const onEnd = () => {
+          if (isOpen) return;
+          menu.hidden = true;
+          backdrop.hidden = true;
+          menu.removeEventListener("transitionend", onEnd);
+        };
+        menu.addEventListener("transitionend", onEnd);
+      };
+
+      const toggleMenu = () => (isOpen ? closeMenu() : openMenu());
+
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        toggleMenu();
+      });
+
+      closeBtn?.addEventListener("click", closeMenu);
+      backdrop.addEventListener("click", closeMenu);
+
+      menu.querySelectorAll(".pageMenu__link").forEach((link) => {
+        link.addEventListener("click", closeMenu);
+      });
+
+      document.addEventListener("click", (e) => {
+        if (!isOpen) return;
+        if (menu.contains(e.target)) return;
+        if (btn.contains(e.target)) return;
+        closeMenu();
+      });
+
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") closeMenu();
+      });
+    });
   </script>
 
   <script src="detail.js"></script>

@@ -1,14 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
-  <!-- トップページ -->
+  <!-- トップ / インデックス -->
   <url>
     <loc>https://italisle.jp/</loc>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
   </url>
 
-  <!-- 詳細ページ -->
+  <!-- お気に入りランキング -->
   <url>
-    <loc>https://italisle.jp/detail.html</loc>
+    <loc>https://italisle.jp/ranking.html</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
   </url>
 
 </urlset>

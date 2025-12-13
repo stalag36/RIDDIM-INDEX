@@ -216,6 +216,266 @@ body{
   font-size: 12px;
 }
 
+/* ▼ タイトルと右上メニューを左右に配置するラッパー */
+.mastheadInner{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+/* 右上メニューまわりの配置 */
+.pageMenuWrap{
+  position: relative;
+  flex: 0 0 auto;
+}
+
+/* ▼ メニューボタン（三本線アイコン） */
+.pageMenuBtn{
+  height: 34px;
+  width: 34px;
+  padding: 0;
+  background: transparent; /* または var(--chip-bg) */
+  border: none;            /* ← 枠を完全に消す */
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+
+
+/* 三本線本体 */
+.pageMenuBtn .hamburger{
+  width: 18px;
+  height: 2px;
+  background: var(--text-soft);
+  position: relative;
+  display: inline-block;
+}
+
+.pageMenuBtn .hamburger::before,
+.pageMenuBtn .hamburger::after{
+  content: "";
+  position: absolute;
+  left: 0;
+  width: 18px;
+  height: 2px;
+  background: var(--text-soft);
+}
+
+.pageMenuBtn .hamburger::before{
+  top: -6px;
+}
+
+.pageMenuBtn .hamburger::after{
+  top: 6px;
+}
+
+.pageMenuBtn:focus{
+  outline: 1px solid var(--accent);
+  outline-offset: 2px;
+}
+
+@media (hover:hover){
+  .pageMenuBtn:hover{
+    background: rgba(255,255,255,0.06);
+  }
+}
+
+
+/* ▼ メニュー本体（ドロップダウン） */
+.pageMenu{
+  position: absolute;
+  right: 0;
+  top: calc(100% + 6px);
+  min-width: 140px;
+  padding: 6px 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.45);
+  z-index: 100;
+}
+
+.pageMenu__list{
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.pageMenu__item{
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+
+.pageMenu__item:last-child{
+  border-bottom: none;
+}
+
+.pageMenu__link{
+  display: block;
+  padding: 8px 14px;
+  font-size: 13px;
+  color: var(--text-soft);
+  text-decoration: none;
+}
+
+@media (hover:hover){
+  .pageMenu__link:hover{
+    background: rgba(255,255,255,0.06);
+    color: var(--text-main);
+  }
+}
+
+.pageMenuBtn:focus-visible{
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+
+/* スマホでは少し小さめに */
+@media (max-width:700px){
+  .pageMenuBtn{
+    height: 32px;
+    width: 32px;
+  }
+}
+
+
+/* =========================================================
+   3.x 右上メニュー（右スライド：今風ドロワー）
+   ========================================================= */
+
+/* 背景オーバーレイ */
+.menuBackdrop{
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .18s ease;
+  z-index: 1000;
+}
+
+/* 右スライドの本体 */
+.pageMenuDrawer{
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100dvh;
+  width: min(78vw, 320px);
+  padding: 10px 0;
+  background: var(--surface);
+  border-left: 1px solid var(--border);
+  box-shadow: -18px 0 40px rgba(0,0,0,0.55);
+  transform: translateX(100%);
+  opacity: 0.98;
+  transition: transform .22s ease, opacity .22s ease;
+  z-index: 1001;
+  overflow: auto;
+}
+
+/* menu-open 状態で表示 */
+body.menu-open .menuBackdrop{
+  opacity: 1;
+  pointer-events: auto;
+}
+
+body.menu-open .pageMenuDrawer{
+  transform: translateX(0);
+  opacity: 1;
+}
+
+/* メニューの中身（既存クラス流用） */
+.pageMenuDrawer .pageMenu__list{
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.pageMenuDrawer .pageMenu__item{
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.pageMenuDrawer .pageMenu__item:last-child{
+  border-bottom: none;
+}
+
+.pageMenuDrawer .pageMenu__link{
+  display: block;
+  padding: 14px 16px;
+  font-size: 14px;
+  color: var(--text-soft);
+  text-decoration: none;
+}
+
+@media (hover:hover){
+  .pageMenuDrawer .pageMenu__link:hover{
+    background: rgba(255,255,255,0.06);
+    color: var(--text-main);
+  }
+}
+
+/* 右上ボタン（既存そのまま）＋開いたら×に変形 */
+.pageMenuBtn .hamburger,
+.pageMenuBtn .hamburger::before,
+.pageMenuBtn .hamburger::after{
+  transition: transform .18s ease, opacity .18s ease, background .18s ease;
+}
+
+.pageMenuBtn.is-open .hamburger{
+  background: transparent;
+}
+
+.pageMenuBtn.is-open .hamburger::before{
+  transform: translateY(6px) rotate(45deg);
+}
+
+.pageMenuBtn.is-open .hamburger::after{
+  transform: translateY(-6px) rotate(-45deg);
+}
+
+/* スマホ微調整 */
+@media (max-width:700px){
+  .pageMenuDrawer{
+    width: min(86vw, 320px);
+  }
+}
+
+.pageMenuHeader{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.pageMenuTitle{
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.pageMenuClose{
+  background: none;
+  border: none;
+  color: var(--text-soft);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+@media (hover:hover){
+  .pageMenuClose:hover{
+    color: var(--text-main);
+  }
+}
+
+
+
 /* =========================================================
    4. 共通コンポーネント（カード / ソート / YouTube / フッター）
    ========================================================= */
@@ -959,4 +1219,134 @@ body.indexPage .card .row:last-child{
     transform: scale(0.9);
     text-shadow: 0 0 8px rgba(255, 216, 100, 0.4);
   }
+}
+
+/* =========================================================
+   ランキング（棒グラフ）
+   ========================================================= */
+
+.rankingCard{
+  margin-top: 12px;
+}
+
+.rankingHead{
+  padding: 10px 10px 6px;
+  border-bottom: 1px solid var(--border);
+}
+
+.rankingTitle{
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.rankingSub{
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: var(--text-soft);
+  opacity: 0.85;
+}
+
+.rankingMeta{
+  padding: 6px 10px 4px;
+  font-size: 12px;
+  color: var(--text-soft);
+}
+
+.rankingBars{
+  padding: 6px 10px 10px;
+}
+
+.rankBarRow{
+  display: grid;
+  grid-template-columns: 44px 1fr 64px;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px dashed var(--border-dash);
+}
+
+.rankBarRow:last-child{
+  border-bottom: none;
+}
+
+.rankBarRank{
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-soft);
+  opacity: 0.9;
+  padding-right: 4px;
+}
+
+.rankBarLink{
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  min-width: 0;
+}
+
+.rankBarLabel{
+  font-size: 13px;
+  color: var(--text-main);
+  margin-bottom: 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rankBarTrack{
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.06);
+  overflow: hidden;
+}
+
+.rankBarFill{
+  height: 100%;
+  border-radius: 999px;
+  background: var(--star-on);
+  opacity: 0.9;
+  transition: width 0.25s ease;
+}
+
+.rankBarCount{
+  text-align: right;
+  font-size: 12px;
+  color: var(--text-soft);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.rankBarCountNum{
+  display: inline-block;
+  min-width: 1.6em;
+  text-align: right;
+}
+
+@media (hover:hover){
+  .rankBarLink:hover .rankBarLabel{
+    text-decoration: underline;
+  }
+  .rankBarLink:hover .rankBarFill{
+    opacity: 1;
+  }
+}
+
+@media (max-width:700px){
+  .rankBarRow{
+    grid-template-columns: 40px 1fr 58px;
+    gap: 8px;
+    padding: 7px 0;
+  }
+  .rankBarTrack{
+    height: 9px;
+  }
+}
+
+/* カード内だけスクロール */
+.rankingBars{
+  max-height: var(--pickup-max-height, 520px); /* 好きな高さに */
+  overflow-y: auto;
 }
