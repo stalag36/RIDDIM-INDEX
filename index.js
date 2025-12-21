@@ -3,6 +3,7 @@
    - Virtual list
    - Favorites (localStorage) + Supabase sync (lazy load)
    - Row is <a class="row row--click"> (full-row link)
+   - Sort header is <button class="sortHead" data-key data-dir ...> (SVG arrows)
    ============================================================ */
 
 (() => {
@@ -52,9 +53,10 @@
     const qInput = document.getElementById("q");
     const labelSelect = document.getElementById("labelSelect");
     const yearSelect = document.getElementById("yearSelect");
-    const hName = document.getElementById("hName");
-    const hLabel = document.getElementById("hLabel");
-    const hYear = document.getElementById("hYear");
+
+    // ✅ NEW: sort header buttons (replaces hName/hLabel/hYear click targets)
+    const sortHeads = Array.from(document.querySelectorAll(".sortHead"));
+
     const favFilterBtn = document.getElementById("filterFavorites");
     const resetBtn = document.getElementById("resetFilters");
     const toastEl = document.getElementById("toast");
@@ -83,9 +85,6 @@
 
     let supabaseClient = null;
 
-    // NOTE:
-    // - If index.html defines window.loadSupabase() that returns a client, use it.
-    // - Otherwise, fallback to global window.supabase.createClient if available.
     async function getSupabaseClient() {
       try {
         if (supabaseClient) return supabaseClient;
@@ -413,7 +412,6 @@
     let ROW_H = 40;
 
     function measureRowH() {
-      // Create a probe <a> row to match actual row height
       const probe = document.createElement("a");
       probe.className = "row row--click";
       probe.href = "#";
@@ -494,7 +492,33 @@
       favIdleTimer = setTimeout(() => startIdleAnimation(), 200);
     }
 
+    // ✅ NEW: update sort header buttons UI (data-dir / is-active / aria-sort)
     function updateSortUI() {
+      const setAria = (btn, dir) => {
+        if (!btn) return;
+        btn.setAttribute(
+          "aria-sort",
+          dir === "asc" ? "ascending" : dir === "desc" ? "descending" : "none"
+        );
+      };
+
+      sortHeads.forEach((btn) => {
+        const key = btn.dataset.key || "";
+        const isActive = key === sortKey;
+
+        btn.classList.toggle("is-active", isActive);
+
+        if (isActive) {
+          btn.dataset.dir = sortDir; // CSS highlights correct arrow
+          setAria(btn, sortDir);
+        } else {
+          // keep a default dir for CSS (neutral). not required but nice.
+          btn.dataset.dir = "asc";
+          setAria(btn, "none");
+        }
+      });
+
+      // meta text
       const jpKey = (key) => {
         if (key === "riddim") return "Riddim";
         if (key === "label") return "レーベル";
@@ -503,30 +527,6 @@
       };
 
       const jpDir = (dir) => (dir === "asc" ? "昇順" : dir === "desc" ? "降順" : dir);
-
-      const arrow = sortDir === "asc" ? " ▲" : " ▼";
-
-      const resetHeader = (el, label) => {
-        if (!el) return;
-        el.classList.remove("sorted");
-        el.textContent = label;
-        el.setAttribute("aria-sort", "none");
-      };
-
-      resetHeader(hName, "Riddim");
-      resetHeader(hLabel, "レーベル");
-      resetHeader(hYear, "リリース年");
-
-      const activate = (el) => {
-        if (!el) return;
-        el.classList.add("sorted");
-        el.textContent += arrow;
-        el.setAttribute("aria-sort", sortDir === "asc" ? "ascending" : "descending");
-      };
-
-      if (sortKey === "riddim") activate(hName);
-      if (sortKey === "label") activate(hLabel);
-      if (sortKey === "year") activate(hYear);
 
       if (metaEl) {
         let text = `表示中 ${visible.length} / ${items.length} ‐ ソート：${jpKey(sortKey)}（${jpDir(sortDir)}）`;
@@ -548,9 +548,14 @@
       applyFiltersAndSort();
     };
 
-    hName?.addEventListener("click", () => toggleSortByHeader("riddim"));
-    hLabel?.addEventListener("click", () => toggleSortByHeader("label"));
-    hYear?.addEventListener("click", () => toggleSortByHeader("year"));
+    // ✅ NEW: attach events to .sortHead buttons
+    sortHeads.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const key = btn.dataset.key || "";
+        if (!key) return;
+        toggleSortByHeader(key);
+      });
+    });
 
     if (qInput) {
       qInput.addEventListener(
@@ -602,6 +607,10 @@
           favFilterBtn.classList.remove("is-active");
           favFilterBtn.setAttribute("aria-pressed", "false");
         }
+
+        // reset sort to default
+        sortKey = "riddim";
+        sortDir = "asc";
 
         applyFiltersAndSort();
       };
@@ -666,15 +675,11 @@
         row.className = "row row--click";
         row.dataset.riddimKey = key || "";
 
-        // full-row link
         row.href = key ? `detail.html?riddim=${encodeURIComponent(key)}` : "#";
-
-        // If key missing, avoid jumping to top
         if (!key) row.addEventListener("click", (e) => e.preventDefault());
 
         if (currentTouchedKey === key) row.classList.add("touch-hover");
 
-        // same structure as before (divs inside)
         row.innerHTML =
           `<div class="name"></div>` +
           `<div class="label">${hi(it.label)}</div>` +
@@ -687,11 +692,8 @@
         favBtn.className = "favToggle";
         favBtn.setAttribute("aria-label", "お気に入り");
 
-        // Initial render anim ON, re-render OFF
         setFavVisual(favBtn, key, isFirstRender);
 
-        // IMPORTANT:
-        // - button is inside <a>, so stop navigation on click
         favBtn.addEventListener("click", async (e) => {
           e.preventDefault();
           e.stopPropagation();
@@ -701,7 +703,6 @@
           const wasFav = isFavorite(key);
           toggleFavorite(key);
 
-          // click anim ON
           setFavVisual(favBtn, key, true);
 
           const nowFav = isFavorite(key);
@@ -721,13 +722,11 @@
             showToast(`${titleForToast}\nお気に入りを解除しました`);
           }
 
-          // Supabase sync (lazy client)
           syncFavoriteToSupabase(key, nowFav);
 
           if (filterFavoritesOnly) applyFiltersAndSort();
         });
 
-        // Prevent <a> keyboard activation when pressing space/enter on button
         favBtn.addEventListener("keydown", (e) => e.stopPropagation());
 
         const nameSpan = document.createElement("span");
@@ -739,7 +738,6 @@
           nameDiv.appendChild(nameSpan);
         }
 
-        // prefetch
         row.addEventListener("mouseenter", () => warmupDetailCache(key));
         row.addEventListener("focus", () => warmupDetailCache(key));
         if (i < start + 5) warmupDetailCache(key);

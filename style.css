@@ -481,22 +481,101 @@ body.menu-open .pageMenuDrawer{
   color: var(--text-soft);
 }
 
-.columns .name,
-.columns .label{
-  flex: 1 1 45%;
-  min-width: 120px;
+/* ===== Sort header buttons (SVG arrows) ===== */
+
+.sortHead{
+  appearance: none;
+  -webkit-appearance: none;
+  border: none;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: inherit;
   cursor: pointer;
+  text-align: left;
 }
 
-.columns .year{
+.sortHead:focus-visible{
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+/* keep your existing column sizing */
+.sortHead.col.name,
+.sortHead.col.label{
+  flex: 1 1 45%;
+  min-width: 120px;
+}
+
+.sortHead.col.year{
   flex: 0 0 76px;
   text-align: right;
   white-space: nowrap;
-  cursor: pointer;
 }
 
-.columns .sorted{ color: var(--accent); }
+.sortLabel{
+  display: inline-block;
+}
 
+/* arrows: stacked vertically
+   ✅ 文字側に詰める：margin-leftを小さく
+   ✅ 少し上に：translateYで上げる（-1〜-3px推奨）
+   ✅ 間隔：負マージンで重ねてさらに詰める
+*/
+.sortArrows{
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  margin-left: 2px;          /* ← 6px → 2px（文字に近づける） */
+  vertical-align: middle;
+  line-height: 0;
+  transform: translateY(-2px); /* ← 少し上へ */
+}
+
+.sortIcon{
+  width: 12px;
+  height: 12px;
+  fill: var(--text-soft);
+  opacity: .55;
+  display: block;
+  line-height: 0;
+}
+
+/* ▼▲の間をさらに詰める（値は好みで -2〜-6px） */
+.sortIcon.up{ margin-bottom: -4px; }
+.sortIcon.down{ margin-top: -4px; }
+
+/* active state */
+.sortHead.is-active .sortLabel{
+  color: var(--accent);
+}
+
+.sortHead.is-active .sortIcon{
+  opacity: .45;
+}
+
+/* highlight current direction */
+.sortHead[data-dir="asc"].is-active .sortIcon.up{
+  fill: var(--accent);
+  opacity: 1;
+}
+
+.sortHead[data-dir="desc"].is-active .sortIcon.down{
+  fill: var(--accent);
+  opacity: 1;
+}
+
+/* hover */
+@media (hover:hover){
+  .sortHead:hover .sortIcon{
+    opacity: .85;
+  }
+}
+
+/* list */
 .list{
   flex: 1 1 auto;
   min-height: 120px;
@@ -862,6 +941,17 @@ body.indexPage .card .row:last-child{ padding-bottom: 8px; }
   }
 
   .columns .label{ padding-left: 35px; }
+
+  /* sort headers should match the same grid in mobile */
+  .columns .sortHead{
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+  }
+
+  .columns .sortHead.col.year{
+    justify-content: flex-end;
+  }
 
   .row{
     display: grid;

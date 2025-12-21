@@ -59,7 +59,10 @@
     window.loadSupabase = async function () {
       if (window.supabase) return window.supabase;
       const mod = await import("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm");
-      window.supabase = mod.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
+      window.supabase = mod.createClient(
+        window.SUPABASE_URL,
+        window.SUPABASE_ANON_KEY
+      );
       return window.supabase;
     };
   </script>
@@ -125,6 +128,7 @@
     <select id="labelSelect" aria-label="レーベルプルダウン">
       <option value="All">レーベル（ALL）</option>
     </select>
+
     <select id="yearSelect" aria-label="年代プルダウン">
       <option value="All">年代（ALL）</option>
     </select>
@@ -156,10 +160,66 @@
   <!-- list -->
   <section class="card container">
     <div class="columns sticky-head" role="row">
-      <div id="hName"  class="col name"  role="columnheader" aria-sort="ascending">Riddim</div>
-      <div id="hLabel" class="col label" role="columnheader" aria-sort="none">レーベル</div>
-      <div id="hYear"  class="col year"  role="columnheader" aria-sort="none">リリース年</div>
+
+      <!-- Riddim -->
+      <button
+        class="sortHead col name is-active"
+        type="button"
+        data-key="riddim"
+        data-dir="asc"
+        aria-sort="ascending"
+      >
+        <span class="sortLabel">Riddim</span>
+        <span class="sortArrows" aria-hidden="true">
+          <svg class="sortIcon up" viewBox="0 0 12 12" focusable="false" aria-hidden="true">
+            <path d="M6 2 L10 6 H2 Z"></path>
+          </svg>
+          <svg class="sortIcon down" viewBox="0 0 12 12" focusable="false" aria-hidden="true">
+            <path d="M2 6 H10 L6 10 Z"></path>
+          </svg>
+        </span>
+      </button>
+
+      <!-- Label -->
+      <button
+        class="sortHead col label"
+        type="button"
+        data-key="label"
+        data-dir="none"
+        aria-sort="none"
+      >
+        <span class="sortLabel">レーベル</span>
+        <span class="sortArrows" aria-hidden="true">
+          <svg class="sortIcon up" viewBox="0 0 12 12" focusable="false" aria-hidden="true">
+            <path d="M6 2 L10 6 H2 Z"></path>
+          </svg>
+          <svg class="sortIcon down" viewBox="0 0 12 12" focusable="false" aria-hidden="true">
+            <path d="M2 6 H10 L6 10 Z"></path>
+          </svg>
+        </span>
+      </button>
+
+      <!-- Year -->
+      <button
+        class="sortHead col year"
+        type="button"
+        data-key="year"
+        data-dir="none"
+        aria-sort="none"
+      >
+        <span class="sortLabel">リリース年</span>
+        <span class="sortArrows" aria-hidden="true">
+          <svg class="sortIcon up" viewBox="0 0 12 12" focusable="false" aria-hidden="true">
+            <path d="M6 2 L10 6 H2 Z"></path>
+          </svg>
+          <svg class="sortIcon down" viewBox="0 0 12 12" focusable="false" aria-hidden="true">
+            <path d="M2 6 H10 L6 10 Z"></path>
+          </svg>
+        </span>
+      </button>
+
     </div>
+
     <div id="list" class="list" role="rowgroup"></div>
   </section>
 
@@ -208,10 +268,6 @@
 
       closeBtn?.addEventListener("click", closeMenu);
       backdrop.addEventListener("click", closeMenu);
-
-      menu.querySelectorAll(".pageMenu__link").forEach((link) => {
-        link.addEventListener("click", closeMenu);
-      });
 
       document.addEventListener("keydown", (e) => {
         if (e.key === "Escape") closeMenu();
