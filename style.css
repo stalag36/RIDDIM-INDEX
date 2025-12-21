@@ -1264,3 +1264,25 @@ body.indexPage .card .row:last-child{ padding-bottom: 8px; }
   }
   .rankBarTrack{ height: 9px; }
 }
+
+/* =========================================
+   Mobile: sort arrows align to text baseline
+   ========================================= */
+@media (max-width: 900px){
+  .columns .sortArrows{
+    /* 文字と同じ高さに合わせる */
+    line-height: 1;
+    margin-left: 4px;          /* 文字に少し寄せる（好みで 2〜6px） */
+    transform: translateY(1px); /* 上に来すぎるのを下げる（0〜2pxで調整） */
+  }
+
+  /* スマホでは負マージン詰めを無効化してズレ防止 */
+  .columns .sortIcon.up{ margin-bottom: 0 !important; }
+  .columns .sortIcon.down{ margin-top: 0 !important; }
+
+  /* アイコン自体も少し小さくすると収まりが良い（任意） */
+  .columns .sortIcon{
+    width: 11px;
+    height: 11px;
+  }
+}
