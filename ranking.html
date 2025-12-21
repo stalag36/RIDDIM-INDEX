@@ -14,12 +14,28 @@
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="shortcut icon" href="/favicon.ico">
 
-  <link rel="stylesheet" href="style.css" />
+  <!-- ✅ preconnect（CDNの初回接続を前倒し） -->
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- ✅ CSS 非同期化（レンダリングブロック軽減） -->
+  <link rel="preload" href="/style.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="/style.css"></noscript>
+
+  <!-- ✅ Supabase設定（軽いので先に） -->
   <script>
     window.SUPABASE_URL = "https://vlijhkkqszwlejnywidy.supabase.co";
     window.SUPABASE_ANON_KEY = "sb_publishable_w55iXdKQ2XpFxjZA6OD2UA_aYtaSvJU";
+  </script>
+
+  <!-- ✅ Supabaseを必要時にだけロードする（レンダリングブロック回避） -->
+  <script>
+    window.loadSupabase = async function () {
+      if (window.supabase) return window.supabase; // 既にロード済み
+
+      const mod = await import("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm");
+      window.supabase = mod.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
+      return window.supabase;
+    };
   </script>
 </head>
 
@@ -156,6 +172,7 @@
     });
   </script>
 
-  <script src="ranking.js"></script>
+  <!-- ✅ ranking.js：defer（レンダリングブロック回避） -->
+  <script src="/ranking.js" defer></script>
 </body>
 </html>

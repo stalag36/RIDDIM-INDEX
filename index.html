@@ -5,36 +5,31 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="version" content="v1.3" />
 
-  <!-- ★ SEO用 description -->
   <meta name="description" content="RIDDIM INDEX（リディム・インデックス）は、レゲエのリディムを一覧で検索・閲覧できるデータベースです。" />
-
-  <!-- ★ canonical（Googleに正規URLを伝える） -->
   <link rel="canonical" href="https://italisle.jp/" />
-
-  <!-- ★ タイトル最適化 -->
   <title>RIDDIM INDEX – レゲエ・リディム データベース</title>
 
-    <!-- ファビコン（ルート固定 + .ico 優先） -->
   <link rel="icon" href="/favicon.ico" sizes="any">
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="shortcut icon" href="/favicon.ico">
 
-  <!-- CSS -->
-  <link rel="stylesheet" href="style.css" />
+  <!-- ✅ preconnect（CDNの初回接続を前倒し） -->
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 
-  <!-- ★ OGP（SNSカード：LINE/Twitter/Facebook/Slackなど） -->
+  <!-- ✅ CSS 非同期化（レンダリングブロック軽減） -->
+  <link rel="preload" href="/style.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="/style.css"></noscript>
+
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="RIDDIM INDEX" />
   <meta property="og:title" content="RIDDIM INDEX – レゲエ・リディム データベース" />
   <meta property="og:description" content="RIDDIM INDEX（リディム・インデックス）は、レゲエのリディムを一覧で検索・閲覧できるデータベースです。" />
   <meta property="og:url" content="https://italisle.jp/" />
 
-  <!-- ★ Twitterカード -->
   <meta name="twitter:card" content="summary" />
   <meta name="twitter:title" content="RIDDIM INDEX – レゲエ・リディム データベース" />
   <meta name="twitter:description" content="RIDDIM INDEX（リディム・インデックス）は、レゲエのリディムを一覧で検索・閲覧できるデータベースです。" />
 
-  <!-- ★ JSON-LD：サイト内検索機能（SearchAction） -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -48,6 +43,24 @@
     }
   }
   </script>
+
+  <!-- ✅ Supabase設定は先に置く（値だけ軽いのでOK） -->
+  <script>
+    window.SUPABASE_URL = "https://vlijhkkqszwlejnywidy.supabase.co";
+    window.SUPABASE_ANON_KEY = "sb_publishable_w55iXdKQ2XpFxjZA6OD2UA_aYtaSvJU";
+  </script>
+
+  <!-- ✅ Supabase JS は「必要になったら」ロードするためのヘルパ -->
+  <script>
+    window.loadSupabase = async function () {
+      if (window.supabase) return window.supabase; // 既にロード済み
+
+      // ESMで遅延ロード（レンダリングブロックしない）
+      const mod = await import("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm");
+      window.supabase = mod.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
+      return window.supabase;
+    };
+  </script>
 </head>
 
 <body class="indexPage">
@@ -58,7 +71,6 @@
         <span class="ver">v1.3</span>
       </h1>
 
-      <!-- ▼ 右上メニューボタン -->
       <div class="pageMenuWrap">
         <button
           id="pageMenuBtn"
@@ -72,12 +84,9 @@
           <span class="hamburger" aria-hidden="true"></span>
         </button>
 
-        <!-- ▼ 背景（クリックで閉じる） -->
         <div id="menuBackdrop" class="menuBackdrop" hidden></div>
 
-        <!-- ▼ 右スライドメニュー本体 -->
         <nav id="pageMenu" class="pageMenuDrawer" hidden aria-label="メニュー">
-          <!-- ★ ヘッダー：メニュー + ✕ -->
           <div class="pageMenuHeader">
             <span class="pageMenuTitle">メニュー</span>
             <button id="menuCloseBtn" class="pageMenuClose" type="button" aria-label="メニューを閉じる">✕</button>
@@ -115,22 +124,11 @@
       <option value="All">年代（ALL）</option>
     </select>
 
-    <button
-      id="filterFavorites"
-      class="favFilterBtn"
-      type="button"
-      aria-pressed="false"
-      aria-label="お気に入りのみ表示"
-    >
+    <button id="filterFavorites" class="favFilterBtn" type="button" aria-pressed="false" aria-label="お気に入りのみ表示">
       ★ Favorites
     </button>
 
-    <button
-      id="resetFilters"
-      class="resetBtn"
-      type="button"
-      aria-label="検索条件をリセット"
-    >
+    <button id="resetFilters" class="resetBtn" type="button" aria-label="検索条件をリセット">
       ↻
     </button>
   </section>
@@ -148,14 +146,7 @@
     <div id="list" class="list" role="rowgroup"></div>
   </section>
 
-  <!-- ▼ Supabase（index でも detail と同じプロジェクトを使う） -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script>
-    window.SUPABASE_URL = "https://vlijhkkqszwlejnywidy.supabase.co";
-    window.SUPABASE_ANON_KEY = "sb_publishable_w55iXdKQ2XpFxjZA6OD2UA_aYtaSvJU";
-  </script>
-
-  <!-- ▼ 右上メニュー開閉（右スライド対応 + ✕追加） -->
+  <!-- ▼ 右上メニュー開閉（そのまま） -->
   <script>
     document.addEventListener("DOMContentLoaded", () => {
       const btn = document.getElementById("pageMenuBtn");
@@ -199,24 +190,18 @@
 
       const toggleMenu = () => (isOpen ? closeMenu() : openMenu());
 
-      // ボタンクリック
       btn.addEventListener("click", (e) => {
         e.stopPropagation();
         toggleMenu();
       });
 
-      // ✕ボタンで閉じる
       closeBtn?.addEventListener("click", closeMenu);
-
-      // 背景クリック
       backdrop.addEventListener("click", closeMenu);
 
-      // メニューリンク押下で閉じる
       menu.querySelectorAll(".pageMenu__link").forEach((link) => {
         link.addEventListener("click", closeMenu);
       });
 
-      // 外側クリックで閉じる
       document.addEventListener("click", (e) => {
         if (!isOpen) return;
         if (menu.contains(e.target)) return;
@@ -224,15 +209,14 @@
         closeMenu();
       });
 
-      // Escで閉じる
       document.addEventListener("keydown", (e) => {
         if (e.key === "Escape") closeMenu();
       });
     });
   </script>
 
-  <!-- アプリ本体 -->
-  <script src="index.js"></script>
+  <!-- ✅ アプリ本体：defer（レンダリングブロック回避） -->
+  <script src="/index.js" defer></script>
 
   <footer class="footerNote">
     ChatGPTによって作成しているため、情報は必ずしも正しいとは限りません。<br>

@@ -14,7 +14,29 @@
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="shortcut icon" href="/favicon.ico">
 
-  <link rel="stylesheet" href="style.css" />
+  <!-- ✅ preconnect（CDNの初回接続を前倒し） -->
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+
+  <!-- ✅ CSS 非同期化（レンダリングブロック軽減） -->
+  <link rel="preload" href="/style.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="/style.css"></noscript>
+
+  <!-- ✅ Supabase設定は先に置く（値だけなので軽い） -->
+  <script>
+    window.SUPABASE_URL = "https://vlijhkkqszwlejnywidy.supabase.co";
+    window.SUPABASE_ANON_KEY = "sb_publishable_w55iXdKQ2XpFxjZA6OD2UA_aYtaSvJU";
+  </script>
+
+  <!-- ✅ Supabase JS を必要時にだけロードする（レンダリングブロック回避） -->
+  <script>
+    window.loadSupabase = async function () {
+      if (window.supabase) return window.supabase; // 既にロード済み
+
+      const mod = await import("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm");
+      window.supabase = mod.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
+      return window.supabase;
+    };
+  </script>
 </head>
 
 <body class="detailPage">
@@ -133,13 +155,6 @@
     <ul id="pickup" class="songList"></ul>
   </section>
 
-  <!-- Supabase CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script>
-    window.SUPABASE_URL = "https://vlijhkkqszwlejnywidy.supabase.co";
-    window.SUPABASE_ANON_KEY = "sb_publishable_w55iXdKQ2XpFxjZA6OD2UA_aYtaSvJU";
-  </script>
-
   <!-- ▼ 右上メニュー開閉（indexと同じ） -->
   <script>
     document.addEventListener("DOMContentLoaded", () => {
@@ -209,7 +224,8 @@
     });
   </script>
 
-  <script src="detail.js"></script>
+  <!-- ✅ detail.js：defer（レンダリングブロック回避） -->
+  <script src="/detail.js" defer></script>
 
   <footer class="footerNote">
     ChatGPTによって作成しているため、情報は必ずしも正しいとは限りません。<br>

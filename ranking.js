@@ -1,4 +1,4 @@
-// ranking.js
+// ranking.js  (Supabase 遅延ロード対応版)
 (() => {
   const metaEl = document.getElementById("rankingMeta");
   const barsEl = document.getElementById("rankingBars");
@@ -16,14 +16,13 @@
     return;
   }
 
-  const supabase = window.supabase.createClient(url, key);
-
   const UUID_RE =
     /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
   // 「リディム名」っぽいカラム優先（ここが一番大事）
   const NAME_COLS = [
     "riddim",
+    "riddim_key",
     "riddim_name",
     "riddimName",
     "name",
@@ -77,7 +76,7 @@
   const render = (entries, totalRows) => {
     const maxCount = entries[0][1];
     if (metaEl) metaEl.textContent = `表示: ${entries.length}件（favorites総数: ${totalRows}）`;
-    barsEl.innerHTML = "";
+    if (barsEl) barsEl.innerHTML = "";
 
     entries.forEach(([name, count], i) => {
       const pct = maxCount ? (count / maxCount) * 100 : 0;
@@ -121,8 +120,7 @@
   };
 
   // favorites が uuid しか無い場合の救済：riddims.json から ID→表示名を解決
-  const resolveByRiddimsJson = async (idField) => {
-    // ここはあなたのプロジェクトのパスに合わせて（同階層にある前提）
+  const resolveByRiddimsJson = async (supabase, idField) => {
     const res = await fetch("riddims.json", { cache: "no-store" });
     if (!res.ok) throw new Error("riddims.json が読めません");
 
@@ -159,7 +157,7 @@
       const rid = String(row?.[idField] ?? "").trim();
       if (!rid) continue;
       const name = map.get(rid);
-      if (!name) continue; // 解決できないのは表示しない（必要なら後で表示に変えられる）
+      if (!name) continue; // 解決できないのは表示しない
       counts.set(name, (counts.get(name) || 0) + 1);
     }
 
@@ -169,6 +167,22 @@
 
   (async () => {
     if (metaEl) metaEl.textContent = "読み込み中...";
+
+    // ✅ Supabase 遅延ロード（ranking.html 側の window.loadSupabase を使用）
+    let supabase = null;
+    try {
+      if (typeof window.loadSupabase === "function") {
+        supabase = await window.loadSupabase();
+      } else if (window.supabase?.createClient) {
+        supabase = window.supabase.createClient(url, key);
+      } else {
+        fail("Supabase ローダーが見つかりません（loadSupabase）。ranking.html を遅延版に差し替えてください。");
+        return;
+      }
+    } catch (e) {
+      fail("Supabase の初期化に失敗しました（Console参照）", e);
+      return;
+    }
 
     // まず1件見てカラム構造を把握
     const { data: sample, error: sampleErr } = await supabase
@@ -190,7 +204,6 @@
     // リディム名として使うカラムを選ぶ
     let nameField = pickNameField(sample[0]);
 
-    // もし “nameField が無い / あるけど uuid っぽい” 場合は idField を推定して riddims.json で解決を試す
     if (!nameField) {
       fail("favorites にリディム名カラムが見つかりません。Consoleの [favorites sample] を見てください。");
       return;
@@ -198,11 +211,12 @@
 
     // nameField の値が UUID っぽい (= 実質ID) なら、json解決ルートへ
     const v = String(sample[0][nameField] ?? "").trim();
-    const looksLikeId = UUID_RE.test(v) || nameField.endsWith("_id") || nameField === "id";
+    const looksLikeId =
+      UUID_RE.test(v) || nameField.endsWith("_id") || nameField === "id";
 
     if (looksLikeId) {
       try {
-        const { entries, total } = await resolveByRiddimsJson(nameField);
+        const { entries, total } = await resolveByRiddimsJson(supabase, nameField);
         if (!entries.length) {
           fail(
             "favorites はID( UUID )しか無さそうです。riddims.json でID→名前の解決に失敗しました。\nConsoleの [favorites sample] と riddims.json の中身（id/nameのキー）を確認してね。"
@@ -234,7 +248,9 @@
       counts.set(name, (counts.get(name) || 0) + 1);
     }
 
-    const entries = [...counts.entries()].filter(([, c]) => c > 0).sort((a, b) => b[1] - a[1]);
+    const entries = [...counts.entries()]
+      .filter(([, c]) => c > 0)
+      .sort((a, b) => b[1] - a[1]);
 
     if (!entries.length) {
       if (metaEl) metaEl.textContent = "ランキング対象がありません";

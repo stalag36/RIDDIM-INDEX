@@ -1,5 +1,5 @@
 /* ============================================================
-   RIDDIM INDEX index.js  v1.3 (Supabase fav sync 対応)
+   RIDDIM INDEX index.js  v1.3 (Supabase fav sync 対応 / 遅延ロード対応)
    ============================================================ */
 
 (function () {
@@ -82,22 +82,36 @@
 
     /* ============================================================
        3. Supabase 関連（お気に入り人数カウント用と同じプロジェクト）
+       ※ PageSpeed対策：supabase-js を遅延ロードしてから createClient
        ============================================================ */
 
     const SUPABASE_URL      = window.SUPABASE_URL || "";
     const SUPABASE_ANON_KEY = window.SUPABASE_ANON_KEY || "";
 
     let supabaseClient = null;
-    function getSupabaseClient() {
+
+    // ✅ 遅延ロード対応（window.loadSupabase があればそれを使う）
+    async function getSupabaseClient() {
       try {
         if (supabaseClient) return supabaseClient;
         if (!SUPABASE_URL || !SUPABASE_ANON_KEY) return null;
-        if (!window.supabase || !window.supabase.createClient) return null;
-        supabaseClient = window.supabase.createClient(
-          SUPABASE_URL,
-          SUPABASE_ANON_KEY
-        );
-        return supabaseClient;
+
+        // index.html 側で定義した遅延ローダーを優先
+        if (typeof window.loadSupabase === "function") {
+          supabaseClient = await window.loadSupabase();
+          return supabaseClient;
+        }
+
+        // 旧方式（もし既に global に supabase が居るなら）
+        if (window.supabase && window.supabase.createClient) {
+          supabaseClient = window.supabase.createClient(
+            SUPABASE_URL,
+            SUPABASE_ANON_KEY
+          );
+          return supabaseClient;
+        }
+
+        return null;
       } catch {
         return null;
       }
@@ -124,7 +138,7 @@
 
     // インデックス側の★操作を Supabase に同期
     async function syncFavoriteToSupabase(riddimKey, isFav) {
-      const client = getSupabaseClient();
+      const client = await getSupabaseClient();
       if (!client || !riddimKey) return;
 
       const userId = getLocalUserId();

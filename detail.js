@@ -1,5 +1,5 @@
 /* ============================================================
-   RIDDIM INDEX detail.js  v1.3 (Supabase fav count 対応)
+   RIDDIM INDEX detail.js  v1.3 (Supabase fav count 対応 / 遅延ロード対応)
    ============================================================ */
 
 (function () {
@@ -52,16 +52,29 @@
   const SUPABASE_ANON_KEY = window.SUPABASE_ANON_KEY || "";
 
   let supabaseClient = null;
-  function getSupabaseClient() {
+
+  // ✅ 遅延ロード対応（window.loadSupabase があればそれを使う）
+  async function getSupabaseClient() {
     try {
       if (supabaseClient) return supabaseClient;
       if (!SUPABASE_URL || !SUPABASE_ANON_KEY) return null;
-      if (!window.supabase || !window.supabase.createClient) return null;
-      supabaseClient = window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_ANON_KEY
-      );
-      return supabaseClient;
+
+      // detail.html 側で定義した遅延ローダーを優先
+      if (typeof window.loadSupabase === "function") {
+        supabaseClient = await window.loadSupabase();
+        return supabaseClient;
+      }
+
+      // 旧方式（もし既に global に supabase が居るなら）
+      if (window.supabase && window.supabase.createClient) {
+        supabaseClient = window.supabase.createClient(
+          SUPABASE_URL,
+          SUPABASE_ANON_KEY
+        );
+        return supabaseClient;
+      }
+
+      return null;
     } catch {
       return null;
     }
@@ -191,7 +204,6 @@
      4. Supabase とお気に入りの同期 & カウント表示
      ============================================================ */
 
-  // ★ 表示用：「★1」のように出す
   function updateFavoriteCount(count) {
     const el = document.getElementById("favCount");
     if (!el) return;
@@ -200,14 +212,13 @@
   }
 
   async function syncFavoriteToSupabase(riddimKey, isFav) {
-    const client = getSupabaseClient();
+    const client = await getSupabaseClient();
     if (!client || !riddimKey) return;
 
     const userId = getLocalUserId();
 
     try {
       if (isFav) {
-        // まず同じ user_id & riddim_key を消してから 1件 Insert
         await client
           .from("favorites")
           .delete()
@@ -219,7 +230,6 @@
           riddim_key: riddimKey,
         });
       } else {
-        // お気に入り解除 → 自分の分を削除
         await client
           .from("favorites")
           .delete()
@@ -232,7 +242,7 @@
   }
 
   async function refreshFavoriteCount(riddimKey) {
-    const client = getSupabaseClient();
+    const client = await getSupabaseClient();
     if (!client || !riddimKey) return;
 
     try {
@@ -361,8 +371,8 @@
         // 初期表示時は idle アニメも有効にする
         setFavVisual(favBtn, favKey, true);
 
-        // Supabase 側のカウント初期表示
-        refreshFavoriteCount(favKey);
+        // ✅ Supabase 側のカウント初期表示（遅延ロード対応なので await）
+        await refreshFavoriteCount(favKey);
 
         favBtn.addEventListener("click", async () => {
           playRipple(favBtn);
@@ -402,7 +412,7 @@
         });
       } else {
         // ボタンが無い場合もカウントだけは更新しておく
-        refreshFavoriteCount(favKey);
+        await refreshFavoriteCount(favKey);
       }
 
       /* --- 6-3. メタ情報 --- */
