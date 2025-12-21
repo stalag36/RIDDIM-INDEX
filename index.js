@@ -1,9 +1,10 @@
 /* ============================================================
-   RIDDIM INDEX index.js  v1.3
+   RIDDIM INDEX index.js  v1.3 (perf tuned)
    - Virtual list
    - Favorites (localStorage) + Supabase sync (lazy load)
    - Row is <a class="row row--click"> (full-row link)
    - Sort header is <button class="sortHead" data-key data-dir ...> (SVG arrows)
+   - ✅ Perf: rAF scroll render + range memo + (mobile) drop mouseenter listeners
    ============================================================ */
 
 (() => {
@@ -54,7 +55,7 @@
     const labelSelect = document.getElementById("labelSelect");
     const yearSelect = document.getElementById("yearSelect");
 
-    // ✅ NEW: sort header buttons (replaces hName/hLabel/hYear click targets)
+    // ✅ sort header buttons
     const sortHeads = Array.from(document.querySelectorAll(".sortHead"));
 
     const favFilterBtn = document.getElementById("filterFavorites");
@@ -75,6 +76,9 @@
     // ★ animation control
     let isFirstRender = true;
     let favIdleTimer = null;
+
+    // ✅ perf flags
+    const CAN_HOVER = window.matchMedia?.("(hover:hover)")?.matches ?? false;
 
     /* ============================================================
        3) Supabase (lazy load) - favorites sync
@@ -450,14 +454,21 @@
       });
     }
 
+    // ✅ perf: scroll render is throttled by rAF
+    let rafId = 0;
+
     listEl.addEventListener(
       "scroll",
       () => {
-        render();
-        pauseIdleAnimation();
+        if (rafId) return;
+        rafId = requestAnimationFrame(() => {
+          rafId = 0;
+          render();
+          pauseIdleAnimation();
 
-        if (favIdleTimer) clearTimeout(favIdleTimer);
-        favIdleTimer = setTimeout(() => startIdleAnimation(), 200);
+          if (favIdleTimer) clearTimeout(favIdleTimer);
+          favIdleTimer = setTimeout(() => startIdleAnimation(), 200);
+        });
       },
       { passive: true }
     );
@@ -471,7 +482,8 @@
         (it) =>
           matchQuery(it) &&
           (filterLabel === "All" || it.label === filterLabel) &&
-          (filterDecade === "All" || toDecade(it.year) === parseInt(filterDecade, 10))
+          (filterDecade === "All" ||
+            toDecade(it.year) === parseInt(filterDecade, 10))
       );
 
       if (filterFavoritesOnly) {
@@ -484,6 +496,10 @@
         return sortDir === "asc" ? v : -v;
       });
 
+      // ✅ reset memo to force repaint after data changes
+      lastStart = -1;
+      lastEnd = -1;
+
       listEl.scrollTop = 0;
       render();
       updateSortUI();
@@ -492,7 +508,6 @@
       favIdleTimer = setTimeout(() => startIdleAnimation(), 200);
     }
 
-    // ✅ NEW: update sort header buttons UI (data-dir / is-active / aria-sort)
     function updateSortUI() {
       const setAria = (btn, dir) => {
         if (!btn) return;
@@ -509,16 +524,14 @@
         btn.classList.toggle("is-active", isActive);
 
         if (isActive) {
-          btn.dataset.dir = sortDir; // CSS highlights correct arrow
+          btn.dataset.dir = sortDir;
           setAria(btn, sortDir);
         } else {
-          // keep a default dir for CSS (neutral). not required but nice.
           btn.dataset.dir = "asc";
           setAria(btn, "none");
         }
       });
 
-      // meta text
       const jpKey = (key) => {
         if (key === "riddim") return "Riddim";
         if (key === "label") return "レーベル";
@@ -526,10 +539,13 @@
         return key;
       };
 
-      const jpDir = (dir) => (dir === "asc" ? "昇順" : dir === "desc" ? "降順" : dir);
+      const jpDir = (dir) =>
+        dir === "asc" ? "昇順" : dir === "desc" ? "降順" : dir;
 
       if (metaEl) {
-        let text = `表示中 ${visible.length} / ${items.length} ‐ ソート：${jpKey(sortKey)}（${jpDir(sortDir)}）`;
+        let text = `表示中 ${visible.length} / ${items.length} ‐ ソート：${jpKey(
+          sortKey
+        )}（${jpDir(sortDir)}）`;
         if (filterFavoritesOnly) text += " ‐ お気に入りのみ";
         metaEl.textContent = text;
       }
@@ -548,7 +564,6 @@
       applyFiltersAndSort();
     };
 
-    // ✅ NEW: attach events to .sortHead buttons
     sortHeads.forEach((btn) => {
       btn.addEventListener("click", () => {
         const key = btn.dataset.key || "";
@@ -587,7 +602,10 @@
     favFilterBtn?.addEventListener("click", () => {
       filterFavoritesOnly = !filterFavoritesOnly;
       favFilterBtn.classList.toggle("is-active", filterFavoritesOnly);
-      favFilterBtn.setAttribute("aria-pressed", filterFavoritesOnly ? "true" : "false");
+      favFilterBtn.setAttribute(
+        "aria-pressed",
+        filterFavoritesOnly ? "true" : "false"
+      );
       applyFiltersAndSort();
     });
 
@@ -608,7 +626,6 @@
           favFilterBtn.setAttribute("aria-pressed", "false");
         }
 
-        // reset sort to default
         sortKey = "riddim";
         sortDir = "asc";
 
@@ -653,6 +670,10 @@
       }
     }
 
+    // ✅ perf: memoize last rendered range
+    let lastStart = -1;
+    let lastEnd = -1;
+
     function render() {
       const viewportH = listEl.clientHeight || 300;
       const total = visible.length * ROW_H;
@@ -662,6 +683,11 @@
         visible.length,
         Math.ceil((listEl.scrollTop + viewportH) / ROW_H) + 10
       );
+
+      // ✅ perf: if range didn't change, do nothing
+      if (start === lastStart && end === lastEnd) return;
+      lastStart = start;
+      lastEnd = end;
 
       outer.style.height = total + "px";
       inner.style.transform = `translateY(${start * ROW_H}px)`;
@@ -738,9 +764,14 @@
           nameDiv.appendChild(nameSpan);
         }
 
-        row.addEventListener("mouseenter", () => warmupDetailCache(key));
-        row.addEventListener("focus", () => warmupDetailCache(key));
-        if (i < start + 5) warmupDetailCache(key);
+        // ✅ perf: only attach hover-related listeners on hover-capable devices
+        if (CAN_HOVER) {
+          row.addEventListener("mouseenter", () => warmupDetailCache(key));
+          row.addEventListener("focus", () => warmupDetailCache(key));
+        }
+
+        // keep small warmup for top items of current window
+        if (i < start + 3) warmupDetailCache(key);
 
         inner.appendChild(row);
       }
