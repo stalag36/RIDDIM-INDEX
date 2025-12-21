@@ -1,5 +1,7 @@
 /* =========================================================
-   RIDDIM INDEX  v1.3
+   RIDDIM INDEX  v1.3 (perf + mobile scroll tuned) - FIXED
+   - ✅ FIX: remove contain: strict on .list (can break scroll height)
+   - ✅ perf: safer containment + scroll optimization
    ========================================================= */
 
 /* =========================================================
@@ -57,6 +59,21 @@ body{
   -webkit-text-size-adjust: 100%;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* ✅ perf: iOS/Android scroll feel
+   ⚠️ FIX: contain: strict は size まで隔離して virtual list のスクロール領域が壊れる端末あり
+   -> layout/paint のみにして安全に
+*/
+.list{
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+
+  /* ✅ FIX */
+  contain: layout paint;
+
+  /* ✅ minor perf hint */
+  will-change: scroll-position;
 }
 
 /* =========================================================
@@ -515,24 +532,18 @@ body.menu-open .pageMenuDrawer{
   white-space: nowrap;
 }
 
-.sortLabel{
-  display: inline-block;
-}
+.sortLabel{ display: inline-block; }
 
-/* arrows: stacked vertically
-   ✅ 文字側に詰める：margin-leftを小さく
-   ✅ 少し上に：translateYで上げる（-1〜-3px推奨）
-   ✅ 間隔：負マージンで重ねてさらに詰める
-*/
+/* arrows: stacked vertically (PC base) */
 .sortArrows{
   display: inline-flex;
   flex-direction: column;
   align-items: center;
   gap: 0;
-  margin-left: 2px;            /* 文字に近づける */
+  margin-left: 2px;
   vertical-align: middle;
   line-height: 0;
-  transform: translateY(-2px); /* 少し上へ（PC基準） */
+  transform: translateY(-2px);
 }
 
 .sortIcon{
@@ -544,25 +555,19 @@ body.menu-open .pageMenuDrawer{
   line-height: 0;
 }
 
-/* ▼▲の間を詰める（PC基準） */
+/* ▼▲ spacing (PC base) */
 .sortIcon.up{ margin-bottom: -4px; }
 .sortIcon.down{ margin-top: -4px; }
 
 /* active state */
-.sortHead.is-active .sortLabel{
-  color: var(--accent);
-}
-
-.sortHead.is-active .sortIcon{
-  opacity: .45;
-}
+.sortHead.is-active .sortLabel{ color: var(--accent); }
+.sortHead.is-active .sortIcon{ opacity: .45; }
 
 /* highlight current direction */
 .sortHead[data-dir="asc"].is-active .sortIcon.up{
   fill: var(--accent);
   opacity: 1;
 }
-
 .sortHead[data-dir="desc"].is-active .sortIcon.down{
   fill: var(--accent);
   opacity: 1;
@@ -570,9 +575,7 @@ body.menu-open .pageMenuDrawer{
 
 /* hover */
 @media (hover:hover){
-  .sortHead:hover .sortIcon{
-    opacity: .85;
-  }
+  .sortHead:hover .sortIcon{ opacity: .85; }
 }
 
 /* list */
@@ -597,6 +600,9 @@ a.row:visited{ color: inherit; }
   padding: var(--sp-6) 10px;
   border-bottom: 1px dashed var(--border-dash);
   color: var(--text-soft);
+
+  /* ✅ perf: row repaint isolation (safe) */
+  contain: layout paint;
 }
 
 .row:last-child{ border-bottom: none; }
@@ -647,9 +653,10 @@ a.row:visited{ color: inherit; }
   top: 1px;
   transform: scale(1);
   opacity: 1;
-  transition:
-    color 0.2s ease-out,
-    text-shadow 0.18s ease-out;
+  transition: color 0.2s ease-out, text-shadow 0.18s ease-out;
+
+  /* ✅ perf */
+  will-change: transform;
 }
 
 .favToggle::after{
@@ -942,7 +949,6 @@ body.indexPage .card .row:last-child{ padding-bottom: 8px; }
 
   .columns .label{ padding-left: 35px; }
 
-  /* sort headers should match the same grid in mobile */
   .columns .sortHead{
     display: flex;
     align-items: center;
@@ -1267,21 +1273,18 @@ body.indexPage .card .row:last-child{ padding-bottom: 8px; }
 
 /* =========================================================
    Mobile (max-width:900px): FORCE override sort arrows
-   - align arrows to text baseline
-   - tighten spacing between ▲▼ (mobile only)
    ========================================================= */
 
 @media (max-width: 900px){
-
   .columns .sortHead{
     display: inline-flex !important;
     align-items: baseline !important;
   }
 
   .columns .sortHead .sortArrows{
-    margin-left: 2px !important;           /* 文字に寄せる */
-    line-height: 1 !important;             /* 0をやめて基準を揃える */
-    transform: translateY(-1px) !important; /* 上に来すぎるのを下げる */
+    margin-left: 2px !important;
+    line-height: 1 !important;
+    transform: translateY(-1px) !important;
     gap: 0 !important;
   }
 
@@ -1292,11 +1295,14 @@ body.indexPage .card .row:last-child{ padding-bottom: 8px; }
     line-height: 0 !important;
   }
 
-  .columns .sortHead .sortIcon.up{
-    margin-bottom: -3px !important; /* -3〜-7px */
-  }
+  .columns .sortHead .sortIcon.up{ margin-bottom: -3px !important; }
+  .columns .sortHead .sortIcon.down{ margin-top: -4px !important; }
+}
 
-  .columns .sortHead .sortIcon.down{
-    margin-top: -4px !important;    /* -4〜-9px */
-  }
+/* =========================================================
+   Mobile: reduce expensive effects during scroll
+   ========================================================= */
+
+@media (max-width: 900px){
+  .row.row--click::before{ transition: none; }
 }

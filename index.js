@@ -1,10 +1,11 @@
 /* ============================================================
-   RIDDIM INDEX index.js  v1.3 (perf tuned)
+   RIDDIM INDEX index.js  v1.4 (mobile bottom-missing fix)
    - Virtual list
    - Favorites (localStorage) + Supabase sync (lazy load)
    - Row is <a class="row row--click"> (full-row link)
    - Sort header is <button class="sortHead" data-key data-dir ...> (SVG arrows)
-   - ✅ Perf: rAF scroll render + range memo + (mobile) drop mouseenter listeners
+   - ✅ Fix: re-measure ROW_H after fonts/resize, keep total height in sync
+   - ✅ Perf: rAF scroll render + range memo + (mobile) drop hover listeners
    ============================================================ */
 
 (() => {
@@ -55,7 +56,6 @@
     const labelSelect = document.getElementById("labelSelect");
     const yearSelect = document.getElementById("yearSelect");
 
-    // ✅ sort header buttons
     const sortHeads = Array.from(document.querySelectorAll(".sortHead"));
 
     const favFilterBtn = document.getElementById("filterFavorites");
@@ -95,7 +95,7 @@
         if (!SUPABASE_URL || !SUPABASE_ANON_KEY) return null;
 
         if (typeof window.loadSupabase === "function") {
-          supabaseClient = await window.loadSupabase(); // should return client
+          supabaseClient = await window.loadSupabase();
           return supabaseClient;
         }
 
@@ -120,11 +120,9 @@
         id = localStorage.getItem(LOCAL_USER_ID_KEY);
         if (id) return id;
 
-        if (window.crypto && crypto.randomUUID) {
-          id = crypto.randomUUID();
-        } else {
-          id = "u_" + Date.now() + "_" + Math.random().toString(16).slice(2);
-        }
+        if (window.crypto && crypto.randomUUID) id = crypto.randomUUID();
+        else id = "u_" + Date.now() + "_" + Math.random().toString(16).slice(2);
+
         localStorage.setItem(LOCAL_USER_ID_KEY, id);
         return id;
       } catch {
@@ -216,9 +214,7 @@
       toastEl.classList.add("show");
 
       if (toastTimer) clearTimeout(toastTimer);
-      toastTimer = setTimeout(() => {
-        toastEl.classList.remove("show");
-      }, 2000);
+      toastTimer = setTimeout(() => toastEl.classList.remove("show"), 2000);
     }
 
     function hapticLight() {
@@ -260,12 +256,34 @@
     }
 
     if (typeof ResizeObserver !== "undefined") {
-      new ResizeObserver(fitListHeight).observe(document.body);
+      new ResizeObserver(() => {
+        fitListHeight();
+        scheduleRecalcRowH();
+      }).observe(document.body);
     }
 
-    window.addEventListener("resize", fitListHeight, { passive: true });
-    window.addEventListener("orientationchange", fitListHeight, { passive: true });
-    setTimeout(fitListHeight, 0);
+    window.addEventListener(
+      "resize",
+      () => {
+        fitListHeight();
+        scheduleRecalcRowH();
+      },
+      { passive: true }
+    );
+
+    window.addEventListener(
+      "orientationchange",
+      () => {
+        fitListHeight();
+        scheduleRecalcRowH();
+      },
+      { passive: true }
+    );
+
+    setTimeout(() => {
+      fitListHeight();
+      scheduleRecalcRowH();
+    }, 0);
 
     /* ============================================================
        7) Utils
@@ -403,19 +421,24 @@
        10) Virtual list base
        ============================================================ */
 
+    // wrapper for virtual list
     const outer = document.createElement("div");
     outer.style.position = "relative";
+    outer.style.width = "100%";
     listEl.appendChild(outer);
 
     const inner = document.createElement("div");
     inner.style.position = "absolute";
     inner.style.left = "0";
     inner.style.right = "0";
+    inner.style.top = "0";
+    inner.style.willChange = "transform";
     outer.appendChild(inner);
 
     let ROW_H = 40;
 
     function measureRowH() {
+      // NOTE: fonts / CSS can change row height on mobile, so this must be re-run.
       const probe = document.createElement("a");
       probe.className = "row row--click";
       probe.href = "#";
@@ -426,15 +449,27 @@
       probe.style.visibility = "hidden";
       probe.style.position = "absolute";
       probe.style.left = "-9999px";
+      probe.style.top = "0";
       outer.appendChild(probe);
 
       const h = probe.getBoundingClientRect().height;
-      ROW_H = Math.max(28, Math.round(h)) || ROW_H;
-
       outer.removeChild(probe);
+
+      const next = Math.max(28, Math.round(h)) || ROW_H;
+      const changed = next !== ROW_H;
+      ROW_H = next;
+
+      return changed;
     }
 
-    measureRowH();
+    // ✅ range memo
+    let lastStart = -1;
+    let lastEnd = -1;
+
+    function resetRenderMemo() {
+      lastStart = -1;
+      lastEnd = -1;
+    }
 
     function pauseIdleAnimation() {
       const stars = listEl.querySelectorAll(".favToggle.is-on");
@@ -453,6 +488,38 @@
         star.classList.add("fav-idle-run");
       });
     }
+
+    // ✅ recalc row height safely (debounced)
+    let recalcTimer = 0;
+    function scheduleRecalcRowH() {
+      clearTimeout(recalcTimer);
+      recalcTimer = setTimeout(() => {
+        const changed = measureRowH();
+        if (changed) {
+          resetRenderMemo();
+          // keep scroll position ratio (avoid jump)
+          // because total height will change
+          render(true);
+        } else {
+          render();
+        }
+      }, 80);
+    }
+
+    // ✅ after fonts loaded, row height often changes on mobile
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready
+        .then(() => {
+          scheduleRecalcRowH();
+        })
+        .catch(() => {});
+    } else {
+      // fallback: a bit later
+      setTimeout(scheduleRecalcRowH, 600);
+    }
+
+    // initial measure
+    measureRowH();
 
     // ✅ perf: scroll render is throttled by rAF
     let rafId = 0;
@@ -496,12 +563,10 @@
         return sortDir === "asc" ? v : -v;
       });
 
-      // ✅ reset memo to force repaint after data changes
-      lastStart = -1;
-      lastEnd = -1;
+      resetRenderMemo();
 
       listEl.scrollTop = 0;
-      render();
+      render(true);
       updateSortUI();
 
       if (favIdleTimer) clearTimeout(favIdleTimer);
@@ -670,13 +735,16 @@
       }
     }
 
-    // ✅ perf: memoize last rendered range
-    let lastStart = -1;
-    let lastEnd = -1;
-
-    function render() {
+    function render(force = false) {
       const viewportH = listEl.clientHeight || 300;
+
+      // ✅ guard: if ROW_H is invalid, re-measure
+      if (!ROW_H || ROW_H < 20) measureRowH();
+
       const total = visible.length * ROW_H;
+
+      // ✅ IMPORTANT: outer height defines scrollable area (this fixes missing bottom)
+      outer.style.height = total + "px";
 
       const start = Math.max(0, Math.floor(listEl.scrollTop / ROW_H) - 10);
       const end = Math.min(
@@ -684,13 +752,11 @@
         Math.ceil((listEl.scrollTop + viewportH) / ROW_H) + 10
       );
 
-      // ✅ perf: if range didn't change, do nothing
-      if (start === lastStart && end === lastEnd) return;
+      if (!force && start === lastStart && end === lastEnd) return;
       lastStart = start;
       lastEnd = end;
 
-      outer.style.height = total + "px";
-      inner.style.transform = `translateY(${start * ROW_H}px)`;
+      inner.style.transform = `translate3d(0, ${start * ROW_H}px, 0)`;
       inner.innerHTML = "";
 
       for (let i = start; i < end; i++) {
@@ -764,13 +830,10 @@
           nameDiv.appendChild(nameSpan);
         }
 
-        // ✅ perf: only attach hover-related listeners on hover-capable devices
         if (CAN_HOVER) {
           row.addEventListener("mouseenter", () => warmupDetailCache(key));
           row.addEventListener("focus", () => warmupDetailCache(key));
         }
-
-        // keep small warmup for top items of current window
         if (i < start + 3) warmupDetailCache(key);
 
         inner.appendChild(row);
@@ -797,8 +860,12 @@
         }));
 
         buildOptions();
-        applyFiltersAndSort();
         fitListHeight();
+
+        // ✅ after first layout, re-measure row height and render
+        scheduleRecalcRowH();
+
+        applyFiltersAndSort();
 
         if (favIdleTimer) clearTimeout(favIdleTimer);
         favIdleTimer = setTimeout(() => startIdleAnimation(), 300);
