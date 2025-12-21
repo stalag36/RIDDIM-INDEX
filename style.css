@@ -2,6 +2,7 @@
    RIDDIM INDEX  v1.3 (perf + mobile scroll tuned) - FIXED
    - ✅ FIX: remove contain: strict on .list (can break scroll height)
    - ✅ perf: safer containment + scroll optimization
+   - ✅ UI: PC scrollbars track matches card inner color
    ========================================================= */
 
 /* =========================================================
@@ -22,7 +23,7 @@
 
   /* colors */
   --bg:          #0e0e10;
-  --surface:     #18181b;
+  --surface:     #18181b;   /* ←カード枠内の色 */
   --border:      #26262c;
   --border-dash: #26262c;
   --accent:      #9146ff;
@@ -74,6 +75,52 @@ body{
 
   /* ✅ minor perf hint */
   will-change: scroll-position;
+}
+
+/* =========================================================
+   1.x Scrollbar (PC): track matches card inner color
+   - applies to scrollable areas inside cards / drawers
+   ========================================================= */
+
+/* Firefox: thumb / track */
+.list,
+body.detailPage .card.container:nth-of-type(2) .songList,
+.rankingBars,
+.pageMenuDrawer{
+  scrollbar-color: rgba(255,255,255,0.22) var(--surface);
+  scrollbar-width: thin;
+}
+
+/* Chrome / Edge / Safari */
+.list::-webkit-scrollbar,
+body.detailPage .card.container:nth-of-type(2) .songList::-webkit-scrollbar,
+.rankingBars::-webkit-scrollbar,
+.pageMenuDrawer::-webkit-scrollbar{
+  width: 10px;
+  height: 10px;
+}
+
+.list::-webkit-scrollbar-track,
+body.detailPage .card.container:nth-of-type(2) .songList::-webkit-scrollbar-track,
+.rankingBars::-webkit-scrollbar-track,
+.pageMenuDrawer::-webkit-scrollbar-track{
+  background: var(--surface);  /* ←背景（トラック）をカード枠内と同じに */
+}
+
+.list::-webkit-scrollbar-thumb,
+body.detailPage .card.container:nth-of-type(2) .songList::-webkit-scrollbar-thumb,
+.rankingBars::-webkit-scrollbar-thumb,
+.pageMenuDrawer::-webkit-scrollbar-thumb{
+  background: rgba(255,255,255,0.22);
+  border-radius: 999px;
+  border: 2px solid var(--surface); /* つまみ外周も馴染ませる */
+}
+
+.list::-webkit-scrollbar-corner,
+body.detailPage .card.container:nth-of-type(2) .songList::-webkit-scrollbar-corner,
+.rankingBars::-webkit-scrollbar-corner,
+.pageMenuDrawer::-webkit-scrollbar-corner{
+  background: var(--surface);
 }
 
 /* =========================================================
